@@ -75,3 +75,7 @@ noRender.sln/
 *.sln
 *.vcxproj
 *.vcxproj.user
+*.md
+*.js
+*.html
+*.css

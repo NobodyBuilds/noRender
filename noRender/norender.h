@@ -29,7 +29,22 @@
 		clears the previous frame
 		*/
 		void clearscreen();
-	};
+
+
+		void drawtriangle(float x, float y, float r, float g, float b, float size);
 
 	
+		
+	};
+	struct data {
+		int screenwidth = 0;
+		int screeheight = 0;
+
+	};
+	struct Vector2D{
+		float x;
+		float y;
+	};
+
+	inline data d;
 	inline norender render;

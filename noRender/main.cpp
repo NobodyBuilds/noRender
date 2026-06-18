@@ -43,6 +43,8 @@ int norender::createWindow(int width, int height, const char* Windowname, int vs
 		std::cerr << "Failed to init GLAD\n";
 		return -1;
 	}
+	d.screenwidth = width;
+	d.screeheight = height;
 };
 
 void norender::closeWindow() {
@@ -65,3 +67,4 @@ void norender::swapbuffers() {
 void norender::clearscreen() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
+

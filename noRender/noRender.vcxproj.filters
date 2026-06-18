@@ -11,6 +11,9 @@
     <ClInclude Include="helper.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="renderdata.h">
+      <Filter>drawcalls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="drawcalls">
@@ -30,5 +33,7 @@
     <ClCompile Include="drawcalls.cpp">
       <Filter>drawcalls</Filter>
     </ClCompile>
+    <ClCompile Include="..\glad\src\glad.c" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
 </Project>

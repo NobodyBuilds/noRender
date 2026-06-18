@@ -5,6 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "norender.h"
+#include "helper.h"
+#include "vertex.h"
+#include"frag.h"
+#include"renderdata.h"
 
 GLFWwindow* window;
 
@@ -21,6 +25,7 @@ int norender::createWindow(int width, int height, const char* Windowname, int vs
 
 	if (!glfwInit()) {
 		printf("glfw init failed");
+		return -1;
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -45,6 +50,7 @@ int norender::createWindow(int width, int height, const char* Windowname, int vs
 	}
 	d.screenwidth = width;
 	d.screeheight = height;
+	return 0;
 };
 
 void norender::closeWindow() {
@@ -66,5 +72,63 @@ void norender::swapbuffers() {
 
 void norender::clearscreen() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+
+void norender::init() {
+
+	//triangle
+	if (triVAO != 0) return;
+	glGenVertexArrays(1, &triVAO);
+	glGenBuffers(1, &triVBO);
+
+	glBindVertexArray(triVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, triVBO);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 5 * sizeof(float), nullptr, GL_STREAM_DRAW); // reserve space, no data yet
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	triangleprogram = createProgram(trianglevert, trianglefrag);
+
+	//quad
+	if (quadVAO != 0) return;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), nullptr, GL_STREAM_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	quadprogram = createProgram(trianglevert, trianglefrag);
+
+	//rectangle
+	if (rectVAO != 0) return;
+	glGenVertexArrays(1, &rectVAO);
+	glGenBuffers(1, &rectVBO);
+
+	glBindVertexArray(rectVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+
+									
+	glBufferData(GL_ARRAY_BUFFER, 6 * 5 * sizeof(float), nullptr, GL_STREAM_DRAW); 
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	rectprogram = createProgram(trianglevert, trianglefrag);
+
+}

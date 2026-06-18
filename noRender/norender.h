@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 	class norender {
 	public:
 
@@ -32,8 +33,14 @@
 
 
 		void drawtriangle(float x, float y, float r, float g, float b, float size);
+		void drawquad(float x, float y, float r, float g, float b, float size);
+		void drawrectangle(float x, float y, float r, float g, float b, float size,float width,float height);
 
-	
+
+		/**
+		initializes renders components use it after window creation
+		*/
+		void init();
 		
 	};
 	struct data {
@@ -41,10 +48,11 @@
 		int screeheight = 0;
 
 	};
-	struct Vector2D{
-		float x;
-		float y;
-	};
 
+
+	
 	inline data d;
 	inline norender render;
+
+	
+		

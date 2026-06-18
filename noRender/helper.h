@@ -2,7 +2,10 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include<glad/glad.h>
-
+#include <cstdint>
+#include<vector>
+#include <cmath>
+#include <vector_types.h>
 
 
 static GLuint compileShader(GLenum type, const char* src)
@@ -41,11 +44,14 @@ static GLuint createProgram(const char* vs, const char* fs)
     glDeleteShader(a);
     glDeleteShader(b);
     return p;
+    
 }
 
-Vector2D PixelToNDC(float pixelX, float pixelY, float windowWidth, float windowHeight) {
-    Vector2D ndc;
+inline float2 PixelToNDC(float pixelX, float pixelY, float windowWidth, float windowHeight) {
+    float2 ndc;
     ndc.x = (pixelX / windowWidth) * 2.0f - 1.0f;
     ndc.y = (pixelY / windowHeight) * 2.0f - 1.0f;
     return ndc;
 }
+
+

@@ -67,3 +67,11 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+
+.vs/
+.git/
+noRender.sln/
+*.sln
+*.vcxproj
+*.vcxproj.user

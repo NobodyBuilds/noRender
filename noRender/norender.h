@@ -1,5 +1,18 @@
 #pragma once
+#include <vector>
 
+
+
+struct Trianglevertex {
+	float x, y, size, r, g, b;
+};
+struct circlevertex {
+	float x, y, size, r, g, b;
+};
+struct quadvertex {
+	float x, y,  width, height ,r, g, b;
+};
+struct chainpoint { float x, y; };
 
 
 	class norender {
@@ -33,10 +46,17 @@
 
 
 		void drawtriangle(float x, float y, float r, float g, float b, float size);
-		void drawquad(float x, float y, float r, float g, float b, float size);
-		void drawrectangle(float x, float y, float r, float g, float b, float size,float width,float height);
+		void drawcircle(float x, float y, float r, float g, float b, float size);
+		void drawquad(float x, float y, float r, float g, float b, float width,float height);
+		//instanced renders
+		void drawtriangleinstanced(std::vector<Trianglevertex>& instances);
 
+		void drawcircleinstanced(std::vector<circlevertex>& instances);
 
+		void drawQuadinstanced(std::vector<quadvertex>& instances);
+
+		void drawline(float x1, float y1, float x2, float y2, float r, float g, float b);
+		void drawlinechain(std::vector<chainpoint>& points, float r, float g, float b);
 		/**
 		initializes renders components use it after window creation
 		*/
@@ -49,6 +69,7 @@
 
 	};
 
+	
 
 	
 	inline data d;

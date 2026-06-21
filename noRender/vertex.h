@@ -1,7 +1,7 @@
 #pragma once
 
 
-const char* trianglevert = R"glsl(
+inline const char* trianglevert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aPos;
 layout(location=1) in vec3 aColor;
@@ -11,7 +11,7 @@ void main(){
 	ourcolor=aColor;
 }
 )glsl";
-const char* circlevert = R"glsl(
+inline const char* circlevert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aPos;
 layout(location=1) in vec3 aColor;
@@ -25,7 +25,7 @@ void main(){
 }
 )glsl";
 
-const char* triInstancedVert = R"glsl(
+inline const char* triInstancedVert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aLocal;   
 layout(location=1) in vec2  iPos;    
@@ -45,7 +45,7 @@ void main(){
     ourcolor = iColor;
 }
 )glsl";
-const char* quadInstancedVert = R"glsl(
+inline const char* quadInstancedVert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aLocal;   
 layout(location=1) in vec2  iPos;    
@@ -66,7 +66,7 @@ void main(){
 }
 )glsl";
 
-const char* circleInstancedVert = R"glsl(
+inline const char* circleInstancedVert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aLocal;  
 layout(location=1) in vec2  iPos;
@@ -89,7 +89,7 @@ void main(){
 }
 )glsl";
 
-const char* chainVert = R"glsl(
+inline const char* chainVert = R"glsl(
 #version 330 core
 layout(location=0) in vec2 aPos;
 out vec3 ourcolor;

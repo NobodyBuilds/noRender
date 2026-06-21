@@ -1,7 +1,7 @@
 #pragma once
 
 
-const char* trianglefrag= R"glsl(
+inline const char* trianglefrag= R"glsl(
 #version 330 core
 out vec4 fragcolor;
 in vec3 ourcolor;
@@ -11,7 +11,7 @@ fragcolor=vec4(ourcolor,1.0);
 }
 )glsl";
 
-const char* circlefrag= R"glsl(
+inline const char* circlefrag= R"glsl(
 #version 330 core
 out vec4 fragcolor;
 in vec3 ourcolor;

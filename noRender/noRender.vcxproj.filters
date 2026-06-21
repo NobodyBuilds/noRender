@@ -14,6 +14,9 @@
     <ClInclude Include="renderdata.h">
       <Filter>drawcalls</Filter>
     </ClInclude>
+    <ClInclude Include="buffers.h">
+      <Filter>initbuffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="drawcalls">
@@ -28,9 +31,12 @@
     <Filter Include="helpers">
       <UniqueIdentifier>{bfeb11a2-e6bc-4b43-9e9f-1c26b6013ecb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="initbuffers">
+      <UniqueIdentifier>{0a337360-3ea7-4b14-9126-5fc52a6f1e8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="drawcalls.cpp">
+    <ClCompile Include="drawcalls2d.cpp">
       <Filter>drawcalls</Filter>
     </ClCompile>
     <ClCompile Include="..\glad\src\glad.c" />

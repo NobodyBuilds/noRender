@@ -12,7 +12,7 @@ void Render2d::drawtriangle(float x ,float y, float r,float g,float b,float size
     
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene \n"); error = false; }
         return;
   }
 
@@ -45,7 +45,7 @@ void Render2d::drawtriangle(float x ,float y, float r,float g,float b,float size
 void Render2d::drawcircle(float x ,float y, float r,float g,float b,float size ) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -79,7 +79,7 @@ void Render2d::drawcircle(float x ,float y, float r,float g,float b,float size )
 void Render2d::drawquad(float x ,float y, float r,float g,float b,float width,float height ) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -117,7 +117,7 @@ void Render2d::drawquad(float x ,float y, float r,float g,float b,float width,fl
 void Render2d::drawtriangleinstanced(std::vector<Trianglevertex>& instances) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -143,7 +143,7 @@ void Render2d::drawtriangleinstanced(std::vector<Trianglevertex>& instances) {
 void Render2d::drawcircleinstanced(std::vector<circlevertex>& instances) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -169,7 +169,7 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex>& instances) {
 void Render2d::drawQuadinstanced(std::vector<quadvertex>& instances) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -195,7 +195,7 @@ void Render2d::drawQuadinstanced(std::vector<quadvertex>& instances) {
 void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g, float b) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
     static bool firstcall = true;
@@ -222,7 +222,7 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
 void Render2d::drawlinechain(std::vector<chainpoint>& points, float r, float g, float b) {
     if (noRender.getMode() == 3) {
         static bool error = true;
-        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene"); error = false; }
+        if (error) { printf("ERROR: use render3D class instead of render2D for 3D scene\n"); error = false; }
         return;
     }
 

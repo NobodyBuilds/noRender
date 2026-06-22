@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 
 
-
+//2d
 	//triangle
 	inline unsigned int triVBO = 0;
 	inline unsigned int triVAO = 0;
@@ -35,3 +35,8 @@
 	//lines
 	inline unsigned int lineVAO = 0, lineVBO = 0, lineprogram = 0;
 	inline unsigned int chainVAO = 0, chainVBO = 0, chainprogram = 0;
+
+	//3d
+	//triangle
+	inline  GLuint tri3dVAO, tri3dVBO, tri3dProgram;
+	inline  GLuint quad3dVAO, quad3dVBO, quad3dProgram;

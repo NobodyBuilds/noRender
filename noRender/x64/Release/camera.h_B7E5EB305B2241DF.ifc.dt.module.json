@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Release\\camera.obj",
+            "outputs": [
+                "x64\\Release\\camera.h_B7E5EB305B2241DF.ifc.dt.module.json",
+                "x64\\Release\\camera.h_B7E5EB305B2241DF.ifc.dt.d.json",
+                "x64\\Release\\camera.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "D:\\visual_studio\\noRender\\noRender\\camera.h",
+                    "source-path": "d:\\visual_studio\\norender\\norender\\camera.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

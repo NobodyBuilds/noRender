@@ -10,12 +10,14 @@
 #include"frag.h"
 #include"renderdata.h"
 #include "buffers.h"
-
-GLFWwindow* window;
-
+#include "camera.h"
 
 
 
+
+
+
+ GLFWwindow* window;
 
 
 
@@ -28,6 +30,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		return;
 	}
 	glViewport(0, 0, width, height);
+	if (noRender.getMode() == 3) {
+		view.cx = width * 0.5f;
+		view.cz = height * 0.5f;
+		view.height = (float)height;
+		view.aspect = (float)width / (float)height;
+	};
+
 };
 
 
@@ -60,6 +69,12 @@ int norender::createWindow(int width, int height, const char* Windowname, int vs
 	}
 	norender::screenwidth = width;
 	norender::screenheight = height;
+
+	view.cx = width * 0.5f;
+	view.cz = height * 0.5f;
+	view.height = (float)height;
+	view.aspect = (float)width / (float)height;
+	view.width();
 	return 0;
 };
 
@@ -82,7 +97,10 @@ void norender::swapbuffers() {
 
 void norender::clearscreen(float r,float g ,float b) {
 	glClearColor(r, g, b, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	if (noRender.getMode() == 3)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	else
+		glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
@@ -99,5 +117,32 @@ void norender::setup2d() {
 }
 void norender::setup3d() {
 	norender::mode = 3;
+	glEnable(GL_DEPTH_TEST);
 	
+}
+void norender::setupCamera() {
+	if (noRender.getMode() == 2) {
+		static bool firstcall = true;
+		if (firstcall) {
+			printf("ERROR: camera is not available for 2d scene\n");
+			firstcall = false;
+		}
+		return;
+	}
+	updateCameraVectors(camera);
+	cameraLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
+}
+
+
+void norender::updateCamera() {
+	updateCameraMovement(window);
+}
+float norender::camposx() {
+	return camera.position.x;
+}
+float norender::camposy() {
+	return camera.position.y;
+}
+float norender::camposz() {
+	return camera.position.z;
 }

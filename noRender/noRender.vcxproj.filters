@@ -11,11 +11,11 @@
     <ClInclude Include="helper.h">
       <Filter>helpers</Filter>
     </ClInclude>
-    <ClInclude Include="renderdata.h">
-      <Filter>drawcalls</Filter>
-    </ClInclude>
     <ClInclude Include="buffers.h">
       <Filter>initbuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="renderdata.h">
+      <Filter>helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +34,9 @@
     <Filter Include="initbuffers">
       <UniqueIdentifier>{0a337360-3ea7-4b14-9126-5fc52a6f1e8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{86ccb040-d24b-41de-8dfb-409af26aa82b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="drawcalls2d.cpp">
@@ -41,5 +44,11 @@
     </ClCompile>
     <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="camera.h">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="draw3d.cpp">
+      <Filter>drawcalls</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

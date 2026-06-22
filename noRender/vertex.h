@@ -105,3 +105,17 @@ void main(){
     ourcolor = linecolor;
 }
 )glsl";
+
+
+inline const char* triangle3dvert = R"glsl(
+
+#version 330 core
+layout(location = 0) in vec3 aPos;
+uniform mat4 mvp;
+uniform vec3 uColor;
+out vec3 ourcolor;
+void main() {
+    gl_Position = mvp * vec4(aPos, 1.0);
+    ourcolor = uColor;
+}
+)glsl";

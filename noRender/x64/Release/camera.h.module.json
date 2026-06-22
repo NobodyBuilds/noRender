@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Release\\camera.h.obj",
+            "outputs": [
+                "D:\\visual_studio\\noRender\\x64\\Release\\noRender.pdb",
+                "x64\\Release\\",
+                "D:\\visual_studio\\noRender\\noRender\\x64\\Release\\camera.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "camera.h",
+                    "source-path": "d:\\visual_studio\\norender\\norender\\camera.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

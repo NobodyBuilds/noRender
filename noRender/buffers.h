@@ -226,3 +226,43 @@ inline void initChainBuffer2d() {
 }
 
 //3d
+
+inline void initTriangleBuffer3d() {
+	if (tri3dVAO != 0) return;
+	float unitTri[] = {
+		-0.5f, -0.5f, 0.f,
+		 0.0f,  0.5f, 0.f,
+		 0.5f, -0.5f, 0.f,
+	};
+
+	glGenVertexArrays(1, &tri3dVAO);
+	glGenBuffers(1, &tri3dVBO);
+	glBindVertexArray(tri3dVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, tri3dVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(unitTri), unitTri, GL_STATIC_DRAW); // never changes
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
+	tri3dProgram = createProgram(triangle3dvert, triangle3dfrag);
+
+}
+
+inline void initQuadBuffer3d() {
+	if (quad3dVAO != 0)return;
+	glGenVertexArrays(1, &quad3dVAO);
+	glGenBuffers(1, &quad3dVBO);
+
+	glBindVertexArray(quad3dVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quad3dVBO);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 6 * sizeof(float), nullptr, GL_STREAM_DRAW); // reserve space, no data yet
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	quad3dProgram = createProgram(triangle3dvert, triangle3dfrag);
+
+}

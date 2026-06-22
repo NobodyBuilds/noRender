@@ -24,3 +24,13 @@ if(r2>1.0) discard;
 fragcolor=vec4(ourcolor,1.0);
 }
 )glsl";
+
+inline const char* triangle3dfrag = R"glsl(
+#version 330 core
+out vec4 fragcolor;
+in vec3 ourcolor;
+
+void main(){
+fragcolor=vec4(ourcolor,1.0);
+}
+)glsl";

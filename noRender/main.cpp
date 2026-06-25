@@ -145,4 +145,5 @@ float norender::camposy() {
 }
 float norender::camposz() {
 	return camera.position.z;
+
 }

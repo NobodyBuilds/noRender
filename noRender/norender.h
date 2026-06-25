@@ -39,29 +39,30 @@
 		
 		
 	};
+	struct Trianglevertex2d {
+		float x, y, size, r, g, b, rotation;
+	};
+	struct circlevertex2d {
+		float x, y, size, r, g, b;
+	};
+	struct quadvertex2d {
+		float x, y, width, height, r, g, b,rotation;
+	};
+	struct chainpoint2d { float x, y; };
 
 	class Render2d {
 	public:
 
-		struct Trianglevertex {
-			float x, y, size, r, g, b;
-		};
-		struct circlevertex {
-			float x, y, size, r, g, b;
-		};
-		struct quadvertex {
-			float x, y, width, height, r, g, b;
-		};
-		struct chainpoint { float x, y; };
+		
 
-		void drawtriangle(float x, float y, float r, float g, float b, float size);
+		void drawtriangle(float x, float y, float r, float g, float b, float size,float rotation);
 		void drawcircle(float x, float y, float r, float g, float b, float size);
-		void drawquad(float x, float y, float r, float g, float b, float width, float height);
-		void drawtriangleinstanced(std::vector<Trianglevertex>& instances);
-		void drawcircleinstanced(std::vector<circlevertex>& instances);
-		void drawQuadinstanced(std::vector<quadvertex>& instances);
+		void drawquad(float x, float y, float r, float g, float b, float width, float height,float rotation);
+		void drawtriangleinstanced(std::vector<Trianglevertex2d>& instances);
+		void drawcircleinstanced(std::vector<circlevertex2d>& instances);
+		void drawQuadinstanced(std::vector<quadvertex2d>& instances);
 		void drawline(float x1, float y1, float x2, float y2, float r, float g, float b);
-		void drawlinechain(std::vector<chainpoint>& points, float r, float g, float b);
+		void drawlinechain(std::vector<chainpoint2d>& points, float r, float g, float b);
 	};
 
 	class Render3d {

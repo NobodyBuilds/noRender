@@ -2,7 +2,7 @@
 #include <vector>
 
 
-
+struct GLFWwindow;
 
 
 	class norender {
@@ -11,7 +11,7 @@
 		int  mode = 2;
 		int screenwidth = 0;
 		int screenheight = 0;
-
+		bool blockedInput = false;
 	public:
 		float movementSpeed = 1.0f;
 		float deltaTime = 1 / 120.0f;
@@ -33,9 +33,10 @@
 		int getMode() { return mode; }
 		int getscreenwidth() { return screenwidth; }
 		int getscreenheight() { return screenheight; }
-
-
-	
+		void screensize(float w ,float h);
+		GLFWwindow* getwindowid();
+		void setInputBlocked(bool blocked);
+		bool inputBlocked() const { return blockedInput; }
 		
 		
 	};
@@ -81,7 +82,12 @@
 
 	
 
-	
+	inline bool firstMouse = true;
+	inline double lastMouseX = 0, lastMouseY = 0;
+	inline bool cameraRotating = false;
+
+	inline float mouseSensitivity = 0.15f;
+	inline float scrollSensitivity = 2.0f;
 
 	
 	inline Render3d render3d;

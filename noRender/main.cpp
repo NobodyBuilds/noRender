@@ -17,22 +17,26 @@
 
 
 
+
  GLFWwindow* window;
 
 
 
-
+ GLFWwindow* norender::getwindowid() {
+	 return window;
+ }
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	if (width == 0 || height == 0) {
+	if ((float)width == 0 || (float)height == 0) {
 		printf("width or height cant be 0");
 		return;
 	}
+	noRender.screensize((float)width, (float)height);
 	glViewport(0, 0, width, height);
 	if (noRender.getMode() == 3) {
-		view.cx = width * 0.5f;
-		view.cz = height * 0.5f;
+		view.cx = (float)width * 0.5f;
+		view.cz = (float)height * 0.5f;
 		view.height = (float)height;
 		view.aspect = (float)width / (float)height;
 	};
@@ -114,6 +118,7 @@ void norender::init() {
 
 void norender::setup2d() {
 	norender::mode = 2;
+	
 }
 void norender::setup3d() {
 	norender::mode = 3;
@@ -131,10 +136,16 @@ void norender::setupCamera() {
 	}
 	updateCameraVectors(camera);
 	cameraLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
+
+	glfwSetCursorPosCallback(window, cursorPosCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
+	glfwSetScrollCallback(window, scrollCallback);
 }
 
 
 void norender::updateCamera() {
+	if (blockedInput) return;
 	updateCameraMovement(window);
 }
 float norender::camposx() {
@@ -146,4 +157,12 @@ float norender::camposy() {
 float norender::camposz() {
 	return camera.position.z;
 
+}
+void norender::screensize(float w ,float h) {
+	norender::screenwidth = (int)w;
+	norender::screenheight = (int)h;
+}
+
+void norender::setInputBlocked(bool blocked) {
+	blockedInput = blocked;
 }

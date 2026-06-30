@@ -132,11 +132,24 @@ inline const char *triangle3dvert = R"glsl(
 
 #version 330 core
 layout(location = 0) in vec3 aPos;
-uniform mat4 mvp;
+uniform vec3 uPos;
+uniform mat4 uproj;
+uniform mat4 uview;
+uniform vec4 rot;
 uniform vec3 uColor;
 out vec3 ourcolor;
+
+vec3 rotate_by_quat(vec3 v, vec4 q) {
+    
+   
+    vec3 t = 2.0 * cross(q.xyz, v);
+    return v + q.w * t + cross(q.xyz, t);
+}
+
 void main() {
-    gl_Position = mvp * vec4(aPos, 1.0);
+    vec3 rotated = rotate_by_quat(aPos, rot);
+    vec3 worldPos = rotated + uPos;
+    gl_Position = uproj * uview * vec4(worldPos, 1.0);
     ourcolor = uColor;
 }
 )glsl";

@@ -46,9 +46,9 @@ void Render2d::drawtriangle(float x, float y, float r, float g, float b, float s
     float n3x_local = half_width * c - (-height_down) * S;
     float n3y_local = half_width * S + (-height_down) * c;
 
-    float2 n1 = PixelToNDC(x + n1x_local, y + n1y_local, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n2 = PixelToNDC(x + n2x_local, y + n2y_local, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n3 = PixelToNDC(x + n3x_local, y + n3y_local, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x + n1x_local, y + n1y_local, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n2 = PixelToNDC(x + n2x_local, y + n2y_local, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n3 = PixelToNDC(x + n3x_local, y + n3y_local, noRender.getscreenwidth(), noRender.getscreenheight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -83,9 +83,9 @@ void Render2d::drawcircle(float x, float y, float r, float g, float b, float siz
         firstcall = false;
     }
     float s = size;
-    float2 n1 = PixelToNDC(x - s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x - s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getscreenwidth(), noRender.getscreenheight());
     float ox[3] = {-1.0f, 3.0f, -1.0f};
     float oy[3] = {-1.0f, -1.0f, 3.0f};
 
@@ -147,12 +147,12 @@ void Render2d::drawquad(float x, float y, float r, float g, float b, float width
 
    
 
-    float2 n1 = PixelToNDC(x + lx1, y +ly1, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n2 = PixelToNDC(x + lx2, y +ly2, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n3 = PixelToNDC(x + lx3, y +ly3, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n4 = PixelToNDC(x + lx4, y +ly4,noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n5 = PixelToNDC(x + lx5, y +ly5,noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n6 = PixelToNDC(x + lx6, y +ly6,noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x + lx1, y +ly1, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n2 = PixelToNDC(x + lx2, y +ly2, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n3 = PixelToNDC(x + lx3, y +ly3, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n4 = PixelToNDC(x + lx4, y +ly4,noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n5 = PixelToNDC(x + lx5, y +ly5,noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n6 = PixelToNDC(x + lx6, y +ly6,noRender.getscreenwidth(), noRender.getscreenheight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -287,8 +287,8 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
         initLineBuffer2d();
         firstcall = false;
     }
-    float2 n1 = PixelToNDC(x1, y1, noRender.getscreenwidth(), noRender.getscreenheight());
-    float2 n2 = PixelToNDC(x2, y2, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x1, y1, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n2 = PixelToNDC(x2, y2, noRender.getscreenwidth(), noRender.getscreenheight());
 
     float vertices[] = {
         n1.x, n1.y, r, g, b,

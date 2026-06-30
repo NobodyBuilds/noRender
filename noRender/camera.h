@@ -1,4 +1,4 @@
-#include <glm/glm.hpp>
+﻿#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include "norender.h"
@@ -83,4 +83,79 @@ inline void updateCameraVectors(Camera& cam)
 	 glm::vec3 dir = glm::normalize(target - camera.position);
 	 camera.pitch = glm::degrees(asin(dir.y));
 	 camera.yaw = glm::degrees(atan2(dir.z, dir.x));
+ }
+
+
+
+ inline void cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+ {
+     
+     if (noRender.inputBlocked()) { printf("blocked"); return;  }
+     
+     
+     // Only rotate when holding left click
+     if (!cameraRotating)
+     {
+         lastMouseX = xpos;
+         lastMouseY = ypos;
+         return;
+     }
+
+     if (firstMouse)
+     {
+         lastMouseX = xpos;
+         lastMouseY = ypos;
+         firstMouse = false;
+     }
+
+     float dx = (float)(xpos - lastMouseX);
+     float dy = (float)(lastMouseY - ypos);
+
+     lastMouseX = xpos;
+     lastMouseY = ypos;
+
+     dx *= mouseSensitivity;
+     dy *= mouseSensitivity;
+
+     camera.yaw += dx;
+     camera.pitch += dy;
+
+     if (camera.pitch > 89.0f)
+         camera.pitch = 89.0f;
+     if (camera.pitch < -89.0f)
+         camera.pitch = -89.0f;
+
+     updateCameraVectors(camera);
+ }
+ inline void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+ {
+   
+     if (noRender.inputBlocked()) { printf("blocked"); return;    }
+ 
+     if (button == GLFW_MOUSE_BUTTON_LEFT)
+     {
+         if (action == GLFW_PRESS)
+         {
+             cameraRotating = true;
+
+             glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+             firstMouse = false;
+         }
+         else if (action == GLFW_RELEASE)
+         {
+             cameraRotating = false;
+             firstMouse = true; 
+         }
+     }
+ }
+ inline void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+ {
+    
+     if (noRender.inputBlocked()) return;
+     camera.fov -= (float)yoffset * scrollSensitivity;
+
+     if (camera.fov < 15.0f)
+         camera.fov = 15.0f;
+     if (camera.fov > 120.0f)
+         camera.fov = 120.0f;
  }

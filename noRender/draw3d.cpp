@@ -16,19 +16,32 @@ void Render3d::drawtriangle3d(float x, float y, float z,
         initTriangleBuffer3d();
         firstcall = false;
     }
+    float d = size / 3.0f;
+    float vert[] = {
+        -d, 0, -d,
+     0, 0,  d,
+     d, 0, -d
+    };
 
+    
+    float rX = rotX * (3.14159265f / 180.0f);
+    float rY = rotY * (3.14159265f / 180.0f);
+    float rZ = rotZ * (3.14159265f / 180.0f);
    
-    glm::mat4 model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(x, y, z));
-    model = glm::rotate(model, glm::radians(rotY), glm::vec3(0, 1, 0));  // yaw
-    model = glm::rotate(model, glm::radians(rotX), glm::vec3(1, 0, 0));  // pitch
-    model = glm::rotate(model, glm::radians(rotZ), glm::vec3(0, 0, 1));  // roll
-    model = glm::scale(model, glm::vec3(size));
+    glm::quat qx = glm::angleAxis(rX, glm::vec3(1, 0, 0));
+    glm::quat qy = glm::angleAxis(rY, glm::vec3(0, 1, 0));
+    glm::quat qz = glm::angleAxis(rZ, glm::vec3(0, 0, 1));
 
-    glm::mat4 mvp = getProjMatrix() * getViewMatrix() * model;
-
+    glm::quat rot = qz * qy * qx;
+    
+    glBindBuffer(GL_ARRAY_BUFFER, tri3dVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vert), vert);
     glUseProgram(tri3dProgram);
-    glUniformMatrix4fv(glGetUniformLocation(tri3dProgram, "mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniform3f(glGetUniformLocation(tri3dProgram, "uPos"), x, y, z);
+
+    glUniformMatrix4fv(glGetUniformLocation(tri3dProgram, "uproj"), 1, GL_FALSE,glm::value_ptr(getProjMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(tri3dProgram, "uview"), 1, GL_FALSE,glm::value_ptr(getViewMatrix()));
+    glUniform4f(glGetUniformLocation(tri3dProgram, "rot"),rot.x,rot.y,rot.z,rot.w);
     glUniform3f(glGetUniformLocation(tri3dProgram, "uColor"), r, g, b);
     glBindVertexArray(tri3dVAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);

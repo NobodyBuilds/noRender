@@ -7,7 +7,10 @@
 #include <cmath>
 #include <vector_types.h>
 
-
+struct vec2 {
+    float x;
+    float y;
+};
 static GLuint compileShader(GLenum type, const char* src)
 {
     GLuint s = glCreateShader(type);
@@ -47,8 +50,8 @@ static GLuint createProgram(const char* vs, const char* fs)
     
 }
 
-inline float2 PixelToNDC(float pixelX, float pixelY, float windowWidth, float windowHeight) {
-    float2 ndc;
+inline vec2 PixelToNDC(float pixelX, float pixelY, float windowWidth, float windowHeight) {
+    vec2 ndc;
     ndc.x = (pixelX / windowWidth) * 2.0f - 1.0f;
     ndc.y = (pixelY / windowHeight) * 2.0f - 1.0f;
     return ndc;

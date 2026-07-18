@@ -185,21 +185,21 @@ void Render2d::drawtriangleinstanced(std::vector<Trianglevertex2d> &instances)
     static bool firstcall = true;
     if (firstcall)
     {
-        initInstancedTriangleBuffer2d();
+        initInstancedTriangleBuffer2d((int)instances.size(),0);
         firstcall = false;
     }
     int count = (int)instances.size();
     if (count == 0)
         return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, triInstDataVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, triInstDataVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), instances.data(), GL_STREAM_DRAW);
 
     glUseProgram(triInstProgram);
     glUniform2f(glGetUniformLocation(triInstProgram, "screenSize"),
                 (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
 
-    glBindVertexArray(triInstVAO);
+    glBindVertexArray(triInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }
@@ -218,21 +218,51 @@ void Render2d::drawQuadinstanced(std::vector<quadvertex2d> &instances)
     static bool firstcall = true;
     if (firstcall)
     {
-        initInstancedQuadBuffer2d();
+        initInstancedQuadBuffer2d((int)instances.size(),0);
         firstcall = false;
     }
     int count = (int)instances.size();
     if (count == 0)
         return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), instances.data(), GL_STREAM_DRAW);
 
     glUseProgram(quadInstProgram);
     glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
                 (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
 
-    glBindVertexArray(quadInstVAO);
+    glBindVertexArray(quadInstVAO[0]);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
+    glBindVertexArray(0);
+}
+void Render2d::drawQuadinstancedbyinterop(int count,int id) {//for interops ,no data loading only drawing
+
+    if (noRender.getMode() == 3)
+    {
+        static bool error = true;
+        if (error)
+        {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+    static bool firstcall = true;
+    if (firstcall)
+    {
+        initInstancedQuadBuffer2d(count,id);
+        firstcall = false;
+    }
+   
+    if (count == 0)
+        return;
+    glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
+    glUseProgram(quadInstProgram);
+    glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+
+    glBindVertexArray(quadInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
 }
@@ -251,21 +281,21 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
     static bool firstcall = true;
     if (firstcall)
     {
-        initInstancedCircleBuffer2d();
+        initInstancedCircleBuffer2d((int)instances.size(),0);
         firstcall = false;
     }
     int count = (int)instances.size();
     if (count == 0)
         return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, count * 6 * sizeof(float), instances.data(), GL_STREAM_DRAW);
 
     glUseProgram(circleInstProgram);
     glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
                 (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
 
-    glBindVertexArray(circleInstVAO);
+    glBindVertexArray(circleInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }
@@ -301,7 +331,7 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
 }
-void Render2d::drawlinechain(std::vector<chainpoint2d> &points, float r, float g, float b)
+void Render2d::drawlineinstanced(std::vector<linepoint2d> &points)
 {
     if (noRender.getMode() == 3)
     {
@@ -317,22 +347,56 @@ void Render2d::drawlinechain(std::vector<chainpoint2d> &points, float r, float g
     static bool firstcall = true;
     if (firstcall)
     {
-        initChainBuffer2d();
+        initlineinstancedBuffer2d((int)points.size(),0);
         firstcall = false;
     }
     int count = (int)points.size();
     if (count < 2)
         return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, chainVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * 2 * sizeof(float), points.data(), GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, chainVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), points.data(), GL_STREAM_DRAW);
 
     glUseProgram(chainprogram);
     glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
-                (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
-    glUniform3f(glGetUniformLocation(chainprogram, "linecolor"), r, g, b);
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
 
-    glBindVertexArray(chainVAO);
-    glDrawArrays(GL_LINE_STRIP, 0, count);
+    glBindVertexArray(chainVAO[0]);
+    glDrawArraysInstanced(GL_LINES, 0, 2, count);
+    glBindVertexArray(0);
+}
+void Render2d::drawlineinstancedbyinterop(int c,int id)
+{
+    if (noRender.getMode() == 3)
+    {
+        static bool error = true;
+        if (error)
+        {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+    if (id == 0) {
+        printf(" id 0 is already assigned use 1 ");
+        return;
+    }
+    static bool firstcall = true;
+    if (firstcall)
+    {
+        initlineinstancedBuffer2d(c,id);
+        firstcall = false;
+    }
+   
+
+    glBindBuffer(GL_ARRAY_BUFFER, chainVBO[id]);
+  
+
+    glUseProgram(chainprogram);
+    glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+
+    glBindVertexArray(chainVAO[id]);
+    glDrawArraysInstanced(GL_LINES, 0, 2, c);
     glBindVertexArray(0);
 }

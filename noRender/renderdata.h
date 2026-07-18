@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 
+inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 //2d
 	//triangle
 	inline unsigned int triVBO = 0;
@@ -18,23 +19,24 @@
 	
 	//instanced
 	//triangle
-	inline unsigned int triInstVAO = 0;
-	inline unsigned int triInstBaseVBO = 0; 
-	inline unsigned int triInstDataVBO = 0;  
+	inline unsigned int triInstVAO[max_interop] = { 0 };
+	inline unsigned int triInstBaseVBO[max_interop] = { 0 }; 
+	inline unsigned int triInstDataVBO[max_interop] = { 0 };
 	inline unsigned int triInstProgram = 0;
 	//circle
-	inline unsigned int circleInstVAO = 0;
-	inline unsigned int circleInstBaseVBO = 0; 
-	inline unsigned int circleInstDataVBO = 0;  
+	inline unsigned int circleInstVAO[max_interop] = {0};
+	inline unsigned int circleInstBaseVBO[max_interop] = {0}; 
+	inline unsigned int circleInstDataVBO[max_interop] = {0};
 	inline unsigned int circleInstProgram = 0;
 	//quad
-	inline unsigned int quadInstVAO = 0;
-	inline unsigned int quadInstBaseVBO = 0; 
-	inline unsigned int quadInstDataVBO = 0;  
+	inline unsigned int quadInstVAO[max_interop] = { 0 };
+	inline unsigned int quadInstBaseVBO[max_interop] = { 0 }; 
+	inline unsigned int quadInstDataVBO[max_interop] = { 0 };
 	inline unsigned int quadInstProgram = 0;
 	//lines
 	inline unsigned int lineVAO = 0, lineVBO = 0, lineprogram = 0;
-	inline unsigned int chainVAO = 0, chainVBO = 0, chainprogram = 0;
+	inline unsigned int chainVAO[max_interop] = { 0 }, chainVBO[max_interop] = { 0 }, chainprogram = 0 ;
+	inline unsigned int chainbaseVAO[max_interop] = { 0 }, chainbaseVBO[max_interop] = { 0 };
 
 	//3d
 	//triangle

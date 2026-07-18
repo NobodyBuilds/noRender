@@ -16,7 +16,7 @@ void Render3d::drawtriangle3d(float x, float y, float z,
         initTriangleBuffer3d();
         firstcall = false;
     }
-    float d = size / 3.0f;
+    float d = size;
     float vert[] = {
         -d, 0, -d,
      0, 0,  d,

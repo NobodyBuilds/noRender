@@ -134,6 +134,7 @@ void norender::setupCamera() {
 		}
 		return;
 	}
+	if (blockedInput) return;
 	updateCameraVectors(camera);
 	cameraLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -145,7 +146,7 @@ void norender::setupCamera() {
 
 
 void norender::updateCamera() {
-	if (blockedInput) return;
+
 	updateCameraMovement(window);
 }
 float norender::camposx() {
@@ -164,5 +165,33 @@ void norender::screensize(float w ,float h) {
 }
 
 void norender::setInputBlocked(bool blocked) {
-	blockedInput = blocked;
+	norender::blockedInput = blocked;
 }
+
+
+//vboids
+
+unsigned int vboids::triangle_vbo() const {
+	initTriangleBuffer2d();
+	return triVBO; }
+unsigned int vboids::triangle_instanced_vbo(int count,int id) const {
+	initInstancedTriangleBuffer2d( count,id);
+	return triInstDataVBO[id]; }
+unsigned int vboids::circle_vbo() const { 
+	initCircleBuffer2d();
+	return cirVBO; }
+unsigned int vboids::circle_instanced_vbo(int count,int id) const { 
+	initInstancedCircleBuffer2d(count,id);
+	return circleInstDataVBO[id]; }
+unsigned int vboids::quad_vbo() const { 
+	initQuadBuffer2d();
+	return quadVBO; }
+unsigned int vboids::quad_instanced_vbo(int count,int id) const { 
+	initInstancedQuadBuffer2d(count,id);
+	return quadInstDataVBO[id]; }
+unsigned int vboids::line_vbo() const { 
+	initLineBuffer2d();
+	return lineVBO; }
+unsigned int vboids::line_instanced_vbo(int count,int id) const {
+	initlineinstancedBuffer2d(count,id);
+	return chainVBO[id]; }

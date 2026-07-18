@@ -113,18 +113,22 @@ void main(){
 
 inline const char *chainVert = R"glsl(
 #version 330 core
-layout(location=0) in vec2 aPos;
+layout(location=0) in float aT;
+layout(location=1) in vec2  iStart;
+layout(location=2) in vec2  iEnd;
+layout(location=3) in vec3  iColor;
 out vec3 ourcolor;
-uniform vec3 linecolor;
+
 uniform vec2 screenSize;
 
 void main(){
+ vec2 world = mix(iStart, iEnd, aT);
     gl_Position = vec4(
-        aPos.x / (screenSize.x * 0.5) - 1.0,
-        aPos.y / (screenSize.y * 0.5) - 1.0,
+        world.x / (screenSize.x * 0.5) - 1.0,
+        world.y / (screenSize.y * 0.5) - 1.0,
         0.0, 1.0
     );
-    ourcolor = linecolor;
+    ourcolor = iColor;
 }
 )glsl";
 

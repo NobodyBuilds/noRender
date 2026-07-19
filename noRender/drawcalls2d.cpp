@@ -82,7 +82,7 @@ void Render2d::drawcircle(float x, float y, float r, float g, float b, float siz
         initCircleBuffer2d();
         firstcall = false;
     }
-    float s = size;
+    float s = size*0.5f;
     vec2 n1 = PixelToNDC(x - s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
     vec2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
     vec2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getscreenwidth(), noRender.getscreenheight());
@@ -123,8 +123,8 @@ void Render2d::drawquad(float x, float y, float r, float g, float b, float width
     float radian = rotation * (3.14f / 180.0f);
     float c = cos(radian);
     float S = sin(radian);
-    float w = width;
-    float h = height;
+    float w = width*0.5f;
+    float h = height*0.5f;
 
     float lx1 = -w * c - h * S;
     float ly1 = -w * S + h * c;
@@ -296,6 +296,35 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
                 (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
 
     glBindVertexArray(circleInstVAO[0]);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
+    glBindVertexArray(0);
+}
+void Render2d::drawcircleinstancedbyinterop(int count, int id) {
+    if (noRender.getMode() == 3)
+    {
+        static bool error = true;
+        if (error)
+        {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+    static bool firstcall = true;
+    if (firstcall)
+    {
+        initInstancedCircleBuffer2d(count, id);
+        firstcall = false;
+    }
+   
+    if (count == 0)
+        return;
+    glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[id]);
+    glUseProgram(circleInstProgram);
+    glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+
+    glBindVertexArray(circleInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }

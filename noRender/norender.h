@@ -66,6 +66,7 @@ struct GLFWwindow;
 		void drawline(float x1, float y1, float x2, float y2, float r, float g, float b);
 		void drawlineinstanced(std::vector<linepoint2d>& points);
 		void drawlineinstancedbyinterop(int count,int id);
+		void drawcircleinstancedbyinterop(int count, int id);
 	};
 
 	class Render3d {

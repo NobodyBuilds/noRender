@@ -69,7 +69,7 @@ out vec3 ourcolor;
 uniform vec2 screenSize;
 
 void main(){
-   vec2 l =aLocal * iSize;
+   vec2 l =aLocal * (iSize*0.5f);
     float radian = rot * (3.14159265 / 180.0);
     float c = cos(radian);
     float S = sin(radian);
@@ -100,7 +100,7 @@ out vec2 offset;
 uniform vec2 screenSize;
 
 void main(){
-    vec2 world = iPos + aLocal * iSize;
+    vec2 world = iPos + aLocal * (iSize*0.5f);
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,

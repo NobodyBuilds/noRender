@@ -249,7 +249,8 @@ void Render2d::drawQuadinstancedbyinterop(int count,int id) {//for interops ,no 
         return;
     }
     static bool firstcall = true;
-    if (firstcall)
+    static int pc = 0;
+    if (firstcall|| count>pc)
     {
         initInstancedQuadBuffer2d(count,id);
         firstcall = false;
@@ -265,6 +266,7 @@ void Render2d::drawQuadinstancedbyinterop(int count,int id) {//for interops ,no 
     glBindVertexArray(quadInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
+    pc = count;
 }
 void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
 {
@@ -279,6 +281,7 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
         return;
     }
     static bool firstcall = true;
+
     if (firstcall)
     {
         initInstancedCircleBuffer2d((int)instances.size(),0);
@@ -302,6 +305,7 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
 void Render2d::drawcircleinstancedbyinterop(int count, int id) {
     if (noRender.getMode() == 3)
     {
+        
         static bool error = true;
         if (error)
         {
@@ -310,8 +314,9 @@ void Render2d::drawcircleinstancedbyinterop(int count, int id) {
         }
         return;
     }
+    static int pc = 0;
     static bool firstcall = true;
-    if (firstcall)
+    if (firstcall||count>pc)
     {
         initInstancedCircleBuffer2d(count, id);
         firstcall = false;
@@ -327,6 +332,7 @@ void Render2d::drawcircleinstancedbyinterop(int count, int id) {
     glBindVertexArray(circleInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
+    pc = count;
 }
 void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g, float b)
 {
@@ -410,8 +416,9 @@ void Render2d::drawlineinstancedbyinterop(int c,int id)
         printf(" id 0 is already assigned use 1 ");
         return;
     }
+    static int pc = 0;
     static bool firstcall = true;
-    if (firstcall)
+    if (firstcall||c>pc)
     {
         initlineinstancedBuffer2d(c,id);
         firstcall = false;
@@ -428,4 +435,5 @@ void Render2d::drawlineinstancedbyinterop(int c,int id)
     glBindVertexArray(chainVAO[id]);
     glDrawArraysInstanced(GL_LINES, 0, 2, c);
     glBindVertexArray(0);
+    pc = c;
 }

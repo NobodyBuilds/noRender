@@ -124,11 +124,11 @@ inline void initInstancedCircleBuffer2d(int count,int id)
 	static int prevcount[max_interop] = { 0 };
 	if (circleInstVAO[id] != 0 && prevcount[id] >= count)
 		return;
-
-	glGenVertexArrays(1,&circleInstVAO[id]);
-	glGenBuffers(1, &circleInstBaseVBO[id]);
-	glGenBuffers(1, &circleInstDataVBO[id]);
-
+	if (circleInstVAO == 0) {
+		glGenVertexArrays(1, &circleInstVAO[id]);
+		glGenBuffers(1, &circleInstBaseVBO[id]);
+		glGenBuffers(1, &circleInstDataVBO[id]);
+	}
 	float circlebaseVerts[] = {
 		-1.0f, -1.0f,
 		3.0f, -1.0f,
@@ -141,10 +141,11 @@ inline void initInstancedCircleBuffer2d(int count,int id)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribDivisor(0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[id]);
-	glBufferData(GL_ARRAY_BUFFER, count *6*sizeof(float), circlebaseVerts, GL_STATIC_DRAW);
-	prevcount[id] = count;
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, count * 6 * sizeof(float), circlebaseVerts, GL_STATIC_DRAW);
+		prevcount[id] = count;
+	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0); // pos
 	glEnableVertexAttribArray(1);
 	glVertexAttribDivisor(1, 1);
@@ -158,8 +159,10 @@ inline void initInstancedCircleBuffer2d(int count,int id)
 	glVertexAttribDivisor(3, 1);
 
 	glBindVertexArray(0);
+	if (circleInstProgram == 0) {
 
 	circleInstProgram = createProgram(circleInstancedVert, circlefrag);
+	}
 }
 
 inline void initInstancedQuadBuffer2d(int count,int id)
@@ -171,11 +174,11 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		return;
 
 	
-
-	glGenVertexArrays(1, &quadInstVAO[id]);
-	glGenBuffers(1, &quadInstBaseVBO[id]);
-	glGenBuffers(1, &quadInstDataVBO[id]);
-
+	if (quadInstVAO == 0) {
+		glGenVertexArrays(1, &quadInstVAO[id]);
+		glGenBuffers(1, &quadInstBaseVBO[id]);
+		glGenBuffers(1, &quadInstDataVBO[id]);
+	}
 	float quadbaseVerts[] = {
 		-1.0f, 1.0f,
 		-1.0f, -1.0f,
@@ -193,11 +196,11 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribDivisor(0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
-	glBufferData(GL_ARRAY_BUFFER,count*8 * sizeof(float), nullptr, GL_STATIC_DRAW);
-	prevcount[id] = count;
-
+	if (quadInstDataVBO[id] == 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), nullptr, GL_STATIC_DRAW);
+		prevcount[id] = count;
+	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribDivisor(1, 1);
@@ -215,8 +218,9 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 	glVertexAttribDivisor(4, 1);
 
 	glBindVertexArray(0);
-
-	quadInstProgram = createProgram(quadInstancedVert, trianglefrag);
+	if (quadInstProgram == 0) {
+		quadInstProgram = createProgram(quadInstancedVert, trianglefrag);
+	}
 }
 
 inline void initLineBuffer2d()
@@ -239,11 +243,11 @@ inline void initlineinstancedBuffer2d(int count,int id)
 	static int prevcount[max_interop] = { 0 };
 	if (chainVAO[id] != 0 && prevcount[id] >= count)
 		return;
-
-	glGenVertexArrays(1, &chainVAO[id]);
-	glGenBuffers(1, &chainVBO[id]);
-	glGenBuffers(1, &chainbaseVBO[id]);
-
+	if (chainVAO[id] == 0) {
+		glGenVertexArrays(1, &chainVAO[id]);
+		glGenBuffers(1, &chainVBO[id]);
+		glGenBuffers(1, &chainbaseVBO[id]);
+	}
 
 	float lineBaseVerts[] = { 0.0f, 1.0f };
 
@@ -254,11 +258,11 @@ inline void initlineinstancedBuffer2d(int count,int id)
 	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribDivisor(0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, chainVBO[id]);
-	glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), nullptr, GL_STREAM_DRAW);
-	prevcount[id] = count;
-
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, chainVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), nullptr, GL_STREAM_DRAW);
+		prevcount[id] = count;
+	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0); // ox,oy
 	glEnableVertexAttribArray(1);
 	glVertexAttribDivisor(1, 1);
@@ -272,7 +276,9 @@ inline void initlineinstancedBuffer2d(int count,int id)
 	glVertexAttribDivisor(3, 1);
 
 	glBindVertexArray(0);
-	chainprogram = createProgram(chainVert, trianglefrag);
+	if (chainprogram == 0) {
+		chainprogram = createProgram(chainVert, trianglefrag);
+	}
 }
 
 // 3d

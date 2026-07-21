@@ -73,11 +73,11 @@ inline void initInstancedTriangleBuffer2d(int count,int id)
 	static int prevcount[max_interop] = { 0 };
 	if (triInstVAO != 0 && prevcount[id] >= count)
 		return;
-
-	glGenVertexArrays(1, &triInstVAO[id]);
-	glGenBuffers(1, &triInstBaseVBO[id]);
-	glGenBuffers(1, &triInstDataVBO[id]);
-
+	if (triInstVAO[id] == 0) {
+		glGenVertexArrays(1, &triInstVAO[id]);
+		glGenBuffers(1, &triInstBaseVBO[id]);
+		glGenBuffers(1, &triInstDataVBO[id]);
+	}
 	float tribaseVerts[] = {
 	 -1.0f, -0.577f,   // bottom left
 	 0.0f,  1.155f,   // apex
@@ -90,10 +90,11 @@ inline void initInstancedTriangleBuffer2d(int count,int id)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribDivisor(0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, triInstDataVBO[id]);
-	glBufferData(GL_ARRAY_BUFFER,count * 7 *sizeof(float), nullptr, GL_STATIC_DRAW);
-	prevcount[id] = count;
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, triInstDataVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), nullptr, GL_STATIC_DRAW);
+		prevcount[id] = count;
+	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribDivisor(1, 1);
@@ -115,8 +116,10 @@ inline void initInstancedTriangleBuffer2d(int count,int id)
 	glBindVertexArray(0);
 
 
+	if (triInstProgram == 0) {
 
 	triInstProgram = createProgram(triInstancedVert, trianglefrag);
+	}
 }
 
 inline void initInstancedCircleBuffer2d(int count,int id)
@@ -124,7 +127,7 @@ inline void initInstancedCircleBuffer2d(int count,int id)
 	static int prevcount[max_interop] = { 0 };
 	if (circleInstVAO[id] != 0 && prevcount[id] >= count)
 		return;
-	if (circleInstVAO == 0) {
+	if (circleInstVAO[id] == 0) {
 		glGenVertexArrays(1, &circleInstVAO[id]);
 		glGenBuffers(1, &circleInstBaseVBO[id]);
 		glGenBuffers(1, &circleInstDataVBO[id]);
@@ -174,7 +177,7 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		return;
 
 	
-	if (quadInstVAO == 0) {
+	if (quadInstVAO[id] == 0) {
 		glGenVertexArrays(1, &quadInstVAO[id]);
 		glGenBuffers(1, &quadInstBaseVBO[id]);
 		glGenBuffers(1, &quadInstDataVBO[id]);
@@ -196,7 +199,7 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribDivisor(0, 0);
-	if (quadInstDataVBO[id] == 0) {
+	if (prevcount[id]<count) {
 		glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
 		glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), nullptr, GL_STATIC_DRAW);
 		prevcount[id] = count;

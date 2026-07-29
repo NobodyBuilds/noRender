@@ -38,6 +38,13 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline unsigned int chainVAO[max_interop] = { 0 }, chainVBO[max_interop] = { 0 }, chainprogram = 0 ;
 	inline unsigned int chainbaseVAO[max_interop] = { 0 }, chainbaseVBO[max_interop] = { 0 };
 
+	//texture renders
+	inline unsigned int quadfsVAO[max_interop] = { 0 };
+	inline unsigned int quadfsVBO[max_interop] = { 0 };
+	inline unsigned int quadfsTEX[max_interop] = { 0 };
+	inline unsigned int quadfsprogram = 0;
+
+
 	//3d
 	//triangle
 	inline  GLuint tri3dVAO, tri3dVBO, tri3dProgram;

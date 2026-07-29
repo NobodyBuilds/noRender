@@ -284,6 +284,46 @@ inline void initlineinstancedBuffer2d(int count,int id)
 	}
 }
 
+inline void initquadfsbuffer(int buffersize, int id) {
+	static int prevbuffer[max_interop] = { 0 };
+	if (quadfsVAO[id] != 0 && prevbuffer[id] >= buffersize) {
+		return;
+	}
+	if (quadfsVAO[id] == 0) {
+		glGenVertexArrays(1, &quadfsVAO[id]); 
+		glGenBuffers(1, &quadfsVBO[id]);
+	}
+	float quadFSVerts[] = {
+		       
+		-1.0f,  1.0f,   0.0f, 1.0f,
+		-1.0f, -1.0f,   0.0f, 0.0f,
+		 1.0f, -1.0f,   1.0f, 0.0f,
+
+		-1.0f,  1.0f,   0.0f, 1.0f,
+		 1.0f,  1.0f,   1.0f, 1.0f,
+		 1.0f, -1.0f,   1.0f, 0.0f
+	};
+
+	glBindVertexArray(quadfsVAO[id]);
+	glBindBuffer(GL_ARRAY_BUFFER, quadfsVBO[id]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadFSVerts), quadFSVerts, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	glGenTextures(1, &quadfsTEX[id]);
+	glBindTexture(GL_TEXTURE_2D, quadfsTEX[id]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_LINEAR if want smooth stretch instead of chunky pixels
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	quadfsprogram = createProgram(quadfsVert, quadfsfrag);
+}
 // 3d
 
 inline void initTriangleBuffer3d()

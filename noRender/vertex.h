@@ -157,3 +157,27 @@ void main() {
     ourcolor = uColor;
 }
 )glsl";
+
+inline const  char* quadfsVert= R"glsl(
+
+#version 330 core
+layout(location=0) in vec2 aPos;
+layout(location=1) in vec2 aUV;
+uniform vec2 uPosition;
+uniform vec2 uSize;
+uniform vec2 screenSize;
+
+out vec2 vUV;
+
+void main(){
+    vec2 world = uPosition + aPos * (uSize * 0.5);
+    gl_Position = vec4(
+        world.x / (screenSize.x * 0.5) - 1.0,
+        world.y / (screenSize.y * 0.5) - 1.0,
+        0.0, 1.0
+    );
+    vUV = aUV;
+}
+
+
+)glsl";

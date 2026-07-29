@@ -362,6 +362,7 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
     glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
     glUseProgram(lineprogram);
+    glUniform3f(glGetUniformLocation(lineprogram, "col"), r, g, b);
     glBindVertexArray(lineVAO);
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
@@ -437,3 +438,102 @@ void Render2d::drawlineinstancedbyinterop(int c,int id)
     glBindVertexArray(0);
     pc = c;
 }
+
+void Render2d::quadtex(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY) {
+
+
+    if ((int)quadscreen.size() != pixelX * pixelY)
+    {
+        printf("ERROR: quadscreen size (%zu) != pixelX*pixelY (%d)\n", quadscreen.size(), pixelX * pixelY);
+        return;
+    }
+
+    if (noRender.getMode() == 3) {
+        static bool error = true;
+        if (error)
+        {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    static bool firstcall = true;
+    if (firstcall) {
+        initquadfsbuffer(pixelX*pixelY,0);
+        firstcall = false;
+    }
+
+    static int prevW = 0, prevH = 0;
+    bool resized = (pixelX != prevW || pixelY != prevH);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, quadfsTEX[0]);
+
+    if (resized)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixelX, pixelY, 0, GL_RGBA, GL_FLOAT, quadscreen.data());
+        prevW = pixelX; 
+        prevH = pixelY;
+    }
+    else
+    {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pixelX, pixelY, GL_RGBA, GL_FLOAT, quadscreen.data());
+    }
+
+    glUseProgram(quadfsprogram);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uPosition"), positonX, positonY);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+    glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[0]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+    
+}
+
+void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, int id) {
+
+
+    
+
+    if (noRender.getMode() == 3) {
+        static bool error = true;
+        if (error)
+        {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    static bool firstcall = true;
+    if (firstcall) {
+        initquadfsbuffer(pixelX * pixelY, id);
+        firstcall = false;
+    }
+
+    static int prevW = 0, prevH = 0;
+    bool resized = (pixelX != prevW || pixelY != prevH);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, quadfsTEX[id]);
+
+    
+  
+
+    glUseProgram(quadfsprogram);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uPosition"), positonX, positonY);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
+        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+    glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[id]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+
+}
+

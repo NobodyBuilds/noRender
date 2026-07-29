@@ -34,3 +34,16 @@ void main(){
 fragcolor=vec4(ourcolor,1.0);
 }
 )glsl";
+
+inline const char* quadfsfrag= R"glsl(
+
+#version 330 core
+in vec2 vUV;
+out vec4 fragColor;
+uniform sampler2D uTex;
+
+void main(){
+    fragColor = texture(uTex, vUV);
+}
+
+)glsl";

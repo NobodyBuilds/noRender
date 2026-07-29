@@ -195,3 +195,8 @@ unsigned int vboids::line_vbo() const {
 unsigned int vboids::line_instanced_vbo(int count,int id) const {
 	initlineinstancedBuffer2d(count,id);
 	return chainVBO[id]; }
+
+unsigned int vboids::quad_texture_tex(int buffersize, int id)const {
+	initquadfsbuffer(buffersize, id);
+	return quadfsTEX[id];
+}

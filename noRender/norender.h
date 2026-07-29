@@ -50,6 +50,7 @@ struct GLFWwindow;
 		float x, y, width, height, r, g, b,rotation;
 	};
 	struct linepoint2d { float ox, oy,dx,dy, r, g, b; };
+	struct quadtexture2d { float r, g, b ,opacity; };
 
 	class Render2d {
 	public:
@@ -67,6 +68,8 @@ struct GLFWwindow;
 		void drawlineinstanced(std::vector<linepoint2d>& points);
 		void drawlineinstancedbyinterop(int count,int id);
 		void drawcircleinstancedbyinterop(int count, int id);
+		void quadtex(std::vector<quadtexture2d>& quadscreen,float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY);
+		void quadtexbyinterop(float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY,int id);
 	};
 
 	class Render3d {
@@ -107,6 +110,7 @@ struct GLFWwindow;
 		unsigned int quad_instanced_vbo(int count,int id) const;
 		unsigned int line_vbo() const;
 		unsigned int line_instanced_vbo(int count,int id) const;
+		unsigned int quad_texture_tex(int buffersize, int id) const;
 
 	};
 	inline vboids vbo_id;

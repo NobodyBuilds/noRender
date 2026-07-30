@@ -110,7 +110,7 @@ struct GLFWwindow;
 		unsigned int quad_instanced_vbo(int count,int id) const;
 		unsigned int line_vbo() const;
 		unsigned int line_instanced_vbo(int count,int id) const;
-		unsigned int quad_texture_tex(int buffersize, int id) const;
+		unsigned int quad_texture_tex(int pixelwidth,int pixelheight, int id) const;
 
 	};
 	inline vboids vbo_id;

@@ -460,7 +460,7 @@ void Render2d::quadtex(std::vector<quadtexture2d>& quadscreen, float positonX, f
 
     static bool firstcall = true;
     if (firstcall) {
-        initquadfsbuffer(pixelX*pixelY,0);
+        initquadfsbuffer(pixelX,pixelY,0);
         firstcall = false;
     }
 
@@ -511,7 +511,7 @@ void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth,
 
     static bool firstcall = true;
     if (firstcall) {
-        initquadfsbuffer(pixelX * pixelY, id);
+        initquadfsbuffer(pixelX , pixelY, id);
         firstcall = false;
     }
 

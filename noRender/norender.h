@@ -5,6 +5,19 @@
 struct GLFWwindow;
 
 
+struct Trianglevertex2d {
+	float x, y, size, r, g, b, rotation;
+};
+struct circlevertex2d {
+	float x, y, size, r, g, b;
+};
+struct quadvertex2d {
+	float x, y, width, height, r, g, b, rotation;
+};
+struct linepoint2d { float ox, oy, dx, dy, r, g, b; };
+struct quadtexture2d { float r, g, b, opacity; };
+struct spriteData { std::vector<quadtexture2d> data; int width, height; };
+
 	class norender {
 
 	private:
@@ -37,20 +50,10 @@ struct GLFWwindow;
 		GLFWwindow* getwindowid();
 		void setInputBlocked(bool blocked);
 		bool inputBlocked() { return blockedInput; }
+		 spriteData loadsprite(const char* address);
 		
-		
 	};
-	struct Trianglevertex2d {
-		float x, y, size, r, g, b, rotation;
-	};
-	struct circlevertex2d {
-		float x, y, size, r, g, b;
-	};
-	struct quadvertex2d {
-		float x, y, width, height, r, g, b,rotation;
-	};
-	struct linepoint2d { float ox, oy,dx,dy, r, g, b; };
-	struct quadtexture2d { float r, g, b ,opacity; };
+	
 
 	class Render2d {
 	public:
@@ -70,6 +73,7 @@ struct GLFWwindow;
 		void drawcircleinstancedbyinterop(int count, int id);
 		void quadtex(std::vector<quadtexture2d>& quadscreen,float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY);
 		void quadtexbyinterop(float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY,int id);
+		void drawSprite(spriteData& sprite, float positonX, float positonY, float size);
 	};
 
 	class Render3d {
@@ -99,7 +103,7 @@ struct GLFWwindow;
 	inline Render3d render3d;
 	inline norender noRender;
 	inline Render2d render2d;
-
+	
 	
 	struct vboids {
 		unsigned int triangle_vbo() const;
@@ -114,3 +118,5 @@ struct GLFWwindow;
 
 	};
 	inline vboids vbo_id;
+
+	 

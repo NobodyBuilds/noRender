@@ -17,6 +17,9 @@
     <ClInclude Include="renderdata.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="drawcalls">

@@ -11,7 +11,8 @@
 #include"renderdata.h"
 #include "buffers.h"
 #include "camera.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 
@@ -118,7 +119,8 @@ void norender::init() {
 
 void norender::setup2d() {
 	norender::mode = 2;
-	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 void norender::setup3d() {
 	norender::mode = 3;
@@ -169,6 +171,32 @@ void norender::setInputBlocked(bool blocked) {
 }
 
 
+spriteData norender::loadsprite(const char* address) {
+	int w, h, channels;
+	stbi_set_flip_vertically_on_load(true);
+
+
+	unsigned char* data = stbi_load(address, &w, &h, &channels, 4);
+
+	if (!data) {
+		printf("Failed to load %s: %s\n", address, stbi_failure_reason());
+		return {};
+	}
+	std::vector<quadtexture2d> container;
+	container.reserve(w * h);
+	for (int i = 0; i < w * h; i++) {
+		quadtexture2d t;
+		t.r = data[i * 4 + 0] / 255.0f;
+		t.g = data[i * 4 + 1] / 255.0f;
+		t.b = data[i * 4 + 2] / 255.0f;
+		t.opacity = data[i * 4 + 3] / 255.0f;
+
+		container.push_back(t);
+	}
+	stbi_image_free(data);
+
+	return {container,w,h};
+}
 //vboids
 
 unsigned int vboids::triangle_vbo() const {
@@ -200,3 +228,4 @@ unsigned int vboids::quad_texture_tex(int pixelwidth,int pixelheight, int id)con
 	initquadfsbuffer(pixelwidth,pixelheight, id);
 	return quadfsTEX[id];
 }
+

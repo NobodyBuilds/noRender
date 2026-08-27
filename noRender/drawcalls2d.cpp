@@ -6,6 +6,8 @@
 #include <vector>
 #include "buffers.h"
 
+
+
 void Render2d::drawtriangle(float x, float y, float r, float g, float b, float size,float rotation)
 {
 
@@ -535,5 +537,9 @@ void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth,
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
+}
+
+void Render2d::drawSprite(spriteData & sprite, float positonX, float positonY, float size) {
+    render2d.quadtex(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
 }
 

@@ -18,12 +18,11 @@
 
 
 
-
  GLFWwindow* window;
 
 
 
- GLFWwindow* norender::getwindowid() {
+ GLFWwindow* norender::getWindowHandle() {
 	 return window;
  }
 
@@ -33,7 +32,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		printf("width or height cant be 0");
 		return;
 	}
-	noRender.screensize((float)width, (float)height);
+	noRender.setScreenSize((float)width, (float)height);
 	glViewport(0, 0, width, height);
 	if (noRender.getMode() == 3) {
 		view.cx = (float)width * 0.5f;
@@ -89,18 +88,18 @@ void norender::closeWindow() {
 
 };
 
-bool norender::WindowOpen() {
+bool norender::isWindowOpen() {
 	return !glfwWindowShouldClose(window);
 };
 
-void norender::processinputs() {
+void norender::pollEvents() {
 	glfwPollEvents();
 };
-void norender::swapbuffers() {
+void norender::swapBuffers() {
 	glfwSwapBuffers(window);
 }
 
-void norender::clearscreen(float r,float g ,float b) {
+void norender::clearScreen(float r,float g ,float b) {
 	glClearColor(r, g, b, 1.0f);
 	if (noRender.getMode() == 3)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,12 +116,12 @@ void norender::init() {
 }
 
 
-void norender::setup2d() {
+void norender::setup2D() {
 	norender::mode = 2;
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
-void norender::setup3d() {
+void norender::setup3D() {
 	norender::mode = 3;
 	glEnable(GL_DEPTH_TEST);
 	
@@ -151,17 +150,17 @@ void norender::updateCamera() {
 	updatefov(noRender.fov);
 	updateCameraMovement(window);
 }
-float norender::camposx() {
+float norender::getCameraX() {
 	return camera.position.x;
 }
-float norender::camposy() {
+float norender::getCameraY() {
 	return camera.position.y;
 }
-float norender::camposz() {
+float norender::getCameraZ() {
 	return camera.position.z;
 
 }
-void norender::screensize(float w ,float h) {
+void norender::setScreenSize(float w ,float h) {
 	norender::screenwidth = (int)w;
 	norender::screenheight = (int)h;
 }
@@ -171,7 +170,7 @@ void norender::setInputBlocked(bool blocked) {
 }
 
 
-spriteData norender::loadsprite(const char* address) {
+spriteData norender::loadSprite(const char* address) {
 	int w, h, channels;
 	stbi_set_flip_vertically_on_load(true);
 

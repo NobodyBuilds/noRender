@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-void Render3d::drawtriangle3d(float x, float y, float z,
+void Render::triangle3D(float x, float y, float z,
     float size,
     float rotX, float rotY, 
     float r, float g, float b) {
@@ -49,7 +49,7 @@ void Render3d::drawtriangle3d(float x, float y, float z,
     glBindVertexArray(0);
 }
 
-void Render3d::drawtriangle3dinstaced(std::vector<triangle3d> &instances) {
+void Render::triangleBatch3D(std::vector<triangle3d> &instances) {
     static bool firstcall = true;
     if (firstcall) {
         inittriangle3dinstbuffer((int)instances.size(), 0);
@@ -68,7 +68,7 @@ void Render3d::drawtriangle3dinstaced(std::vector<triangle3d> &instances) {
     glBindVertexArray(0);
 }
 
-void Render3d::drawQuad3d(float x1, float y1, float z1,
+void Render::quad3D(float x1, float y1, float z1,
     float x2, float y2, float z2,
     float x3, float y3, float z3,
     float x4, float y4, float z4,
@@ -97,3 +97,5 @@ void Render3d::drawQuad3d(float x1, float y1, float z1,
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
+
+void Render::rawTriangles3D() {}

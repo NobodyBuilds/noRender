@@ -54,4 +54,7 @@
       <Filter>drawcalls</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\documentation.md" />
+  </ItemGroup>
 </Project>

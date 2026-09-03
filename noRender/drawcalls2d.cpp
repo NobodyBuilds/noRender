@@ -8,7 +8,7 @@
 
 
 
-void Render2d::drawtriangle(float x, float y, float r, float g, float b, float size,float rotation)
+void Render::triangle(float x, float y, float r, float g, float b, float size,float rotation)
 {
 
     if (noRender.getMode() == 3)
@@ -48,9 +48,9 @@ void Render2d::drawtriangle(float x, float y, float r, float g, float b, float s
     float n3x_local = half_width * c - (-height_down) * S;
     float n3y_local = half_width * S + (-height_down) * c;
 
-    vec2 n1 = PixelToNDC(x + n1x_local, y + n1y_local, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n2 = PixelToNDC(x + n2x_local, y + n2y_local, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n3 = PixelToNDC(x + n3x_local, y + n3y_local, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x + n1x_local, y + n1y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + n2x_local, y + n2y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x + n3x_local, y + n3y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -66,7 +66,7 @@ void Render2d::drawtriangle(float x, float y, float r, float g, float b, float s
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
 }
-void Render2d::drawcircle(float x, float y, float r, float g, float b, float size)
+void Render::circle(float x, float y, float r, float g, float b, float size)
 {
     if (noRender.getMode() == 3)
     {
@@ -85,9 +85,9 @@ void Render2d::drawcircle(float x, float y, float r, float g, float b, float siz
         firstcall = false;
     }
     float s = size*0.5f;
-    vec2 n1 = PixelToNDC(x - s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x - s, y - s, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getScreenWidth(), noRender.getScreenHeight());
     float ox[3] = {-1.0f, 3.0f, -1.0f};
     float oy[3] = {-1.0f, -1.0f, 3.0f};
 
@@ -104,7 +104,7 @@ void Render2d::drawcircle(float x, float y, float r, float g, float b, float siz
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
 }
-void Render2d::drawquad(float x, float y, float r, float g, float b, float width, float height,float rotation)
+void Render::quad(float x, float y, float r, float g, float b, float width, float height,float rotation)
 {
     if (noRender.getMode() == 3)
     {
@@ -149,12 +149,12 @@ void Render2d::drawquad(float x, float y, float r, float g, float b, float width
 
    
 
-    vec2 n1 = PixelToNDC(x + lx1, y +ly1, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n2 = PixelToNDC(x + lx2, y +ly2, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n3 = PixelToNDC(x + lx3, y +ly3, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n4 = PixelToNDC(x + lx4, y +ly4,noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n5 = PixelToNDC(x + lx5, y +ly5,noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n6 = PixelToNDC(x + lx6, y +ly6,noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x + lx1, y +ly1, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + lx2, y +ly2, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x + lx3, y +ly3, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n4 = PixelToNDC(x + lx4, y +ly4,noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n5 = PixelToNDC(x + lx5, y +ly5,noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n6 = PixelToNDC(x + lx6, y +ly6,noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -172,7 +172,7 @@ void Render2d::drawquad(float x, float y, float r, float g, float b, float width
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
-void Render2d::drawtriangleinstanced(std::vector<Trianglevertex2d> &instances)
+void Render::triangleBatch(std::vector<Trianglevertex2d> &instances)
 {
     if (noRender.getMode() == 3)
     {
@@ -199,13 +199,13 @@ void Render2d::drawtriangleinstanced(std::vector<Trianglevertex2d> &instances)
 
     glUseProgram(triInstProgram);
     glUniform2f(glGetUniformLocation(triInstProgram, "screenSize"),
-                (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+                (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(triInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }
-void Render2d::drawQuadinstanced(std::vector<quadvertex2d> &instances)
+void Render::quadBatch(std::vector<quadvertex2d> &instances)
 {
     if (noRender.getMode() == 3)
     {
@@ -232,13 +232,13 @@ void Render2d::drawQuadinstanced(std::vector<quadvertex2d> &instances)
 
     glUseProgram(quadInstProgram);
     glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
-                (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+                (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(quadInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
 }
-void Render2d::drawQuadinstancedbyinterop(int count,int id) {//for interops ,no data loading only drawing
+void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading only drawing
 
     if (noRender.getMode() == 3)
     {
@@ -263,14 +263,14 @@ void Render2d::drawQuadinstancedbyinterop(int count,int id) {//for interops ,no 
     glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
     glUseProgram(quadInstProgram);
     glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(quadInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
     pc = count;
 }
-void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
+void Render::circleBatch(std::vector<circlevertex2d> &instances)
 {
     if (noRender.getMode() == 3)
     {
@@ -298,13 +298,13 @@ void Render2d::drawcircleinstanced(std::vector<circlevertex2d> &instances)
 
     glUseProgram(circleInstProgram);
     glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
-                (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+                (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(circleInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }
-void Render2d::drawcircleinstancedbyinterop(int count, int id) {
+void Render::circleBatchInterop(int count, int id) {
     if (noRender.getMode() == 3)
     {
         
@@ -329,14 +329,14 @@ void Render2d::drawcircleinstancedbyinterop(int count, int id) {
     glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[id]);
     glUseProgram(circleInstProgram);
     glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(circleInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
     pc = count;
 }
-void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g, float b)
+void Render::line(float x1, float y1, float x2, float y2, float r, float g, float b)
 {
     if (noRender.getMode() == 3)
     {
@@ -354,8 +354,8 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
         initLineBuffer2d();
         firstcall = false;
     }
-    vec2 n1 = PixelToNDC(x1, y1, noRender.getscreenwidth(), noRender.getscreenheight());
-    vec2 n2 = PixelToNDC(x2, y2, noRender.getscreenwidth(), noRender.getscreenheight());
+    vec2 n1 = PixelToNDC(x1, y1, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x2, y2, noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y, r, g, b,
@@ -369,7 +369,7 @@ void Render2d::drawline(float x1, float y1, float x2, float y2, float r, float g
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
 }
-void Render2d::drawlineinstanced(std::vector<linepoint2d> &points)
+void Render::lineBatch(std::vector<linepoint2d> &points)
 {
     if (noRender.getMode() == 3)
     {
@@ -397,13 +397,13 @@ void Render2d::drawlineinstanced(std::vector<linepoint2d> &points)
 
     glUseProgram(chainprogram);
     glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(chainVAO[0]);
     glDrawArraysInstanced(GL_LINES, 0, 2, count);
     glBindVertexArray(0);
 }
-void Render2d::drawlineinstancedbyinterop(int c,int id)
+void Render::lineBatchInterop(int c,int id)
 {
     if (noRender.getMode() == 3)
     {
@@ -433,7 +433,7 @@ void Render2d::drawlineinstancedbyinterop(int c,int id)
 
     glUseProgram(chainprogram);
     glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(chainVAO[id]);
     glDrawArraysInstanced(GL_LINES, 0, 2, c);
@@ -441,7 +441,7 @@ void Render2d::drawlineinstancedbyinterop(int c,int id)
     pc = c;
 }
 
-void Render2d::quadtex(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY) {
+void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY) {
 
 
     if ((int)quadscreen.size() != pixelX * pixelY)
@@ -487,7 +487,7 @@ void Render2d::quadtex(std::vector<quadtexture2d>& quadscreen, float positonX, f
     glUniform2f(glGetUniformLocation(quadfsprogram, "uPosition"), positonX, positonY);
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[0]);
@@ -496,7 +496,7 @@ void Render2d::quadtex(std::vector<quadtexture2d>& quadscreen, float positonX, f
     
 }
 
-void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, int id) {
+void Render::textureQuadInterop(float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, int id) {
 
 
     
@@ -530,7 +530,7 @@ void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth,
     glUniform2f(glGetUniformLocation(quadfsprogram, "uPosition"), positonX, positonY);
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
-        (float)noRender.getscreenwidth(), (float)noRender.getscreenheight());
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[id]);
@@ -539,7 +539,8 @@ void Render2d::quadtexbyinterop(float positonX, float positonY, float quadWidth,
 
 }
 
-void Render2d::drawSprite(spriteData & sprite, float positonX, float positonY, float size) {
-    render2d.quadtex(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
+void Render::sprite(spriteData & sprite, float positonX, float positonY, float size) {
+    render.textureQuad(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
 }
 
+void Render::rawTriangles2D() {}

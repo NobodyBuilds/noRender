@@ -90,7 +90,7 @@ inline void updateCameraVectors(Camera& cam)
 
  inline void cursorPosCallback(GLFWwindow* window, double xpos, double ypos)
  {
-     if (noRender.inputBlocked()) {  return;  }
+     if (noRender.isInputBlocked()) {  return;  }
      
      
      // Only rotate when holding left click
@@ -130,7 +130,7 @@ inline void updateCameraVectors(Camera& cam)
  inline void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
  {
 
-     if (noRender.inputBlocked()) {  return; }
+     if (noRender.isInputBlocked()) {  return; }
 
 
      if (button == GLFW_MOUSE_BUTTON_LEFT)
@@ -152,7 +152,7 @@ inline void updateCameraVectors(Camera& cam)
  inline void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
  {
     
-     if (noRender.inputBlocked()) return;
+     if (noRender.isInputBlocked()) return;
 
      camera.fov -= (float)yoffset * scrollSensitivity;
 

@@ -12,9 +12,9 @@
 		/** use this to close the window*/
 		void closeWindow();
 
-		bool WindowOpen();
+		bool isWindowOpen();
 	
 	};
 
 	
-	inline norender render;
+	inline norender noRender;

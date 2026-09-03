@@ -5,9 +5,9 @@
         {
             "primary-output": "x64\\Release\\camera.h.obj",
             "outputs": [
-                "D:\\visual_studio\\noRender\\x64\\Release\\noRender.pdb",
+                "d:\\visual_studio\\noRender\\x64\\Release\\noRender.pdb",
                 "x64\\Release\\",
-                "D:\\visual_studio\\noRender\\noRender\\x64\\Release\\camera.h.ifc"
+                "d:\\visual_studio\\noRender\\noRender\\x64\\Release\\camera.h.ifc"
             ],
             "provides": [
                 {

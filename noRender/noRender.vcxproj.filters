@@ -56,5 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\documentation.md" />
+    <None Include="..\.gitignore" />
   </ItemGroup>
 </Project>

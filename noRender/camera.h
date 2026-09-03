@@ -1,4 +1,4 @@
-﻿#include <glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include "norender.h"
@@ -83,6 +83,7 @@ inline void updateCameraVectors(Camera& cam)
 	 glm::vec3 dir = glm::normalize(target - camera.position);
 	 camera.pitch = glm::degrees(asin(dir.y));
 	 camera.yaw = glm::degrees(atan2(dir.z, dir.x));
+	 updateCameraVectors(camera);
  }
 
 

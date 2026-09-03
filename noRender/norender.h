@@ -17,7 +17,7 @@ struct quadvertex2d {
 struct linepoint2d { float ox, oy, dx, dy, r, g, b; };
 struct quadtexture2d { float r, g, b, opacity; };
 struct spriteData { std::vector<quadtexture2d> data; int width, height; };
-
+struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
 	class norender {
 
 	private:
@@ -28,6 +28,7 @@ struct spriteData { std::vector<quadtexture2d> data; int width, height; };
 	public:
 		float movementSpeed = 1.0f;
 		float deltaTime = 1 / 120.0f;
+		float fov = 60.0f;
 		int createWindow(int width, int height, const char* name,int vsync);
 		void closeWindow();
 		bool WindowOpen();
@@ -80,7 +81,7 @@ struct spriteData { std::vector<quadtexture2d> data; int width, height; };
 	public:
 		void drawtriangle3d(float x, float y, float z,
 			float size,
-			float rotX, float rotY, float rotZ,
+			float rotX, float rotY,
 			float r, float g, float b);
 
 		void drawQuad3d(float x1, float y1, float z1,
@@ -88,6 +89,8 @@ struct spriteData { std::vector<quadtexture2d> data; int width, height; };
 			float x3, float y3, float z3,
 			float x4, float y4, float z4,
 			float r, float g, float b);
+
+		void drawtriangle3dinstaced(std::vector<triangle3d>& instances);
 	};
 
 	
@@ -119,4 +122,4 @@ struct spriteData { std::vector<quadtexture2d> data; int width, height; };
 	};
 	inline vboids vbo_id;
 
-	 
+	

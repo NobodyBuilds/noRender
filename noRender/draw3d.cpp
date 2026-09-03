@@ -8,7 +8,7 @@
 
 void Render3d::drawtriangle3d(float x, float y, float z,
     float size,
-    float rotX, float rotY, float rotZ,
+    float rotX, float rotY, 
     float r, float g, float b) {
 
     static bool firstcall = true;
@@ -17,22 +17,23 @@ void Render3d::drawtriangle3d(float x, float y, float z,
         firstcall = false;
     }
     float d = size;
+    float eq = size * 0.577f;
     float vert[] = {
-        -d, 0, -d,
-     0, 0,  d,
-     d, 0, -d
+        -d, 0, -eq,
+     0, 0,  d* 1.155f,
+     d, 0, -eq
     };
 
     
-    float rX = rotX * (3.14159265f / 180.0f);
-    float rY = rotY * (3.14159265f / 180.0f);
-    float rZ = rotZ * (3.14159265f / 180.0f);
+    float rX = rotY * (3.14159265f / 180.0f);
+    float rY = rotX * (3.14159265f / 180.0f);
+  
    
     glm::quat qx = glm::angleAxis(rX, glm::vec3(1, 0, 0));
     glm::quat qy = glm::angleAxis(rY, glm::vec3(0, 1, 0));
-    glm::quat qz = glm::angleAxis(rZ, glm::vec3(0, 0, 1));
+  
 
-    glm::quat rot = qz * qy * qx;
+    glm::quat rot = qy * qx;
     
     glBindBuffer(GL_ARRAY_BUFFER, tri3dVBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vert), vert);
@@ -45,6 +46,25 @@ void Render3d::drawtriangle3d(float x, float y, float z,
     glUniform3f(glGetUniformLocation(tri3dProgram, "uColor"), r, g, b);
     glBindVertexArray(tri3dVAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+}
+
+void Render3d::drawtriangle3dinstaced(std::vector<triangle3d> &instances) {
+    static bool firstcall = true;
+    if (firstcall) {
+        inittriangle3dinstbuffer((int)instances.size(), 0);
+        firstcall = false;
+    }
+    int count = (int)instances.size();
+    if (count < 1)
+        return;
+    glBindBuffer(GL_ARRAY_BUFFER, triangle3dDataVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle3d) * count, instances.data(), GL_STREAM_DRAW);
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(triangle3dProgram[0]);
+    glUniformMatrix4fv(glGetUniformLocation(triangle3dProgram[0], "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glBindVertexArray(triangle3dVAO[0]);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
 }
 

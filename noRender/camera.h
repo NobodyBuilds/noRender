@@ -25,7 +25,7 @@ struct Camera {
 
 	float yaw = -45.0f;
 	float pitch = -15.0f;
-	float fov = 70.0f;
+	float fov =noRender.fov;
 };
 inline Camera camera;
 
@@ -155,6 +155,13 @@ inline void updateCameraVectors(Camera& cam)
 
      camera.fov -= (float)yoffset * scrollSensitivity;
 
+     if (camera.fov < 15.0f)
+         camera.fov = 15.0f;
+     if (camera.fov > 120.0f)
+         camera.fov = 120.0f;
+ }
+ inline void updatefov(float fov) {
+     camera.fov = fov;
      if (camera.fov < 15.0f)
          camera.fov = 15.0f;
      if (camera.fov > 120.0f)

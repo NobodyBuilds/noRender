@@ -181,3 +181,59 @@ void main(){
 
 
 )glsl";
+
+
+inline const  char* tri3dinstvert = R"glsl(
+#version 330 core
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec3 iPos;
+layout(location = 2) in vec2 iRot;
+layout(location = 3) in float size;
+layout(location = 4) in vec3 iColor;
+uniform mat4 vp;
+out vec3 ourcolor;
+
+// quaternion multiply: a * b
+vec4 quatMul(vec4 a, vec4 b) {
+    return vec4(
+        a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+        a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+        a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+        a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z
+    );
+}
+
+// rotate vector v by quaternion q (q must be normalized)
+vec3 quatRotate(vec4 q, vec3 v) {
+    vec3 u = q.xyz;
+    float s = q.w;
+    return 2.0 * dot(u, v) * u
+         + (s * s - dot(u, u)) * v
+         + 2.0 * s * cross(u, v);
+}
+
+// build quat from axis-angle
+vec4 quatFromAxisAngle(vec3 axis, float angle) {
+    float h = angle * 0.5;
+    return vec4(axis * sin(h), cos(h));
+}
+
+// conjugate (inverse for unit quats)
+vec4 quatConj(vec4 q) {
+    return vec4(-q.xyz, q.w);
+}
+vec4 qx = quatFromAxisAngle(vec3(1,0,0), iRot.x);
+vec4 qy = quatFromAxisAngle(vec3(0,1,0), iRot.y);
+vec4 rot = quatMul(qy, qx);
+
+
+void main(){
+    vec3 rotated= quatRotate(rot, aPos*size);
+    vec3 worldpos=rotated + iPos;
+    gl_Position = vp * vec4(worldpos, 1.0);
+    ourcolor = iColor;
+
+}
+
+
+)glsl";

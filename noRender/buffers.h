@@ -122,6 +122,8 @@ inline void initInstancedTriangleBuffer2d(int count,int id)
 	}
 }
 
+
+
 inline void initInstancedCircleBuffer2d(int count,int id)
 {
 	static int prevcount[max_interop] = { 0 };
@@ -354,6 +356,50 @@ inline void initTriangleBuffer3d()
 	glBindVertexArray(0);
 
 	tri3dProgram = createProgram(triangle3dvert, triangle3dfrag);
+}
+
+inline void inittriangle3dinstbuffer(int count, int id) {
+	static int prevcount[max_interop] = { 0 };
+	if(triangle3dVAO[id] != 0 && prevcount[id] >= count) {
+		return;
+	}
+	if(triangle3dVAO[id] == 0) {
+		glGenVertexArrays(1, &triangle3dVAO[id]);
+		glGenBuffers(1, &triangle3dbaseVBO[id]);
+		glGenBuffers(1, &triangle3dDataVBO[id]);
+	}
+	float tribaseverts[] = {
+	-1.0f,0.0f, -0.577f,   // bottom left
+	 0.0f,0.0f,  1.155f,   // apex
+	 1.0f,0.0f, -0.577f 
+	};
+
+	glBindVertexArray(triangle3dVAO[id]);
+	glBindBuffer(GL_ARRAY_BUFFER, triangle3dbaseVBO[id]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tribaseverts) , tribaseverts, GL_STREAM_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribDivisor(0, 0);
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, triangle3dDataVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(triangle3d) * count, nullptr, GL_STATIC_DRAW);
+		prevcount[id] = count;
+	}
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(triangle3d), (void*)0);// position
+	glEnableVertexAttribArray(1);
+	glVertexAttribDivisor(1, 1);
+	glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(triangle3d), (void*)(3 * sizeof(float)));//  size
+	glEnableVertexAttribArray(3);
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(triangle3d), (void*)(4 * sizeof(float)));//  rotation
+	glEnableVertexAttribArray(2);
+	glVertexAttribDivisor(2, 1);	
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(triangle3d), (void*)(6 * sizeof(float)));// color
+	glEnableVertexAttribArray(4);
+	glVertexAttribDivisor(4, 1);
+	glBindVertexArray(0);
+	triangle3dProgram[id] = createProgram(tri3dinstvert, triangle3dfrag);
+	prevcount[id] = count;
 }
 
 inline void initQuadBuffer3d()

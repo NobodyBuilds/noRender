@@ -148,7 +148,7 @@ void norender::setupCamera() {
 
 
 void norender::updateCamera() {
-
+	updatefov(noRender.fov);
 	updateCameraMovement(window);
 }
 float norender::camposx() {
@@ -228,4 +228,5 @@ unsigned int vboids::quad_texture_tex(int pixelwidth,int pixelheight, int id)con
 	initquadfsbuffer(pixelwidth,pixelheight, id);
 	return quadfsTEX[id];
 }
+
 

@@ -183,6 +183,7 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		glGenVertexArrays(1, &quadInstVAO[id]);
 		glGenBuffers(1, &quadInstBaseVBO[id]);
 		glGenBuffers(1, &quadInstDataVBO[id]);
+		glGenBuffers(1, &quadInstEbo[id]);
 	}
 	float quadbaseVerts[] = {
 		-1.0f, 1.0f,
@@ -193,9 +194,13 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		1.0f, -1.0f
 
 	};
+	float indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
 
 	glBindVertexArray(quadInstVAO[id]);
-
+	
 	glBindBuffer(GL_ARRAY_BUFFER, quadInstBaseVBO[id]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quadbaseVerts), quadbaseVerts, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
@@ -221,6 +226,9 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(7 * sizeof(float))); // rotation val
 	glEnableVertexAttribArray(4);
 	glVertexAttribDivisor(4, 1);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadInstEbo[id]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 	if (quadInstProgram == 0) {

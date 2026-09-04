@@ -32,6 +32,7 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline unsigned int quadInstVAO[max_interop] = { 0 };
 	inline unsigned int quadInstBaseVBO[max_interop] = { 0 }; 
 	inline unsigned int quadInstDataVBO[max_interop] = { 0 };
+	inline unsigned int quadInstEbo[max_interop] = { 0 };
 	inline unsigned int quadInstProgram = 0;
 	//lines
 	inline unsigned int lineVAO = 0, lineVBO = 0, lineprogram = 0;

@@ -18,6 +18,8 @@ struct linepoint2d { float ox, oy, dx, dy, r, g, b; };
 struct quadtexture2d { float r, g, b, opacity; };
 struct spriteData { std::vector<quadtexture2d> data; int width, height; };
 struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
+struct simpletriangle { float x, y, r, g, b; };
+struct Mesh2D { std::vector<simpletriangle> data; };
 	class norender {
 
 	private:
@@ -148,7 +150,7 @@ struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
 		void sprite(spriteData& sprite, float positonX, float positonY, float size);
 
 		// Reserved for raw 2D triangle access (advanced)
-		void rawTriangles2D();
+		void Mesh2D();
 
 		// ── 3D draw calls ──
 

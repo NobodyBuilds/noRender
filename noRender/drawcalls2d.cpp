@@ -235,7 +235,7 @@ void Render::quadBatch(std::vector<quadvertex2d> &instances)
                 (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
 
     glBindVertexArray(quadInstVAO[0]);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, count);
     glBindVertexArray(0);
 }
 void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading only drawing
@@ -543,4 +543,6 @@ void Render::sprite(spriteData & sprite, float positonX, float positonY, float s
     render.textureQuad(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
 }
 
-void Render::rawTriangles2D() {}
+void Render::Mesh2D() {
+
+}

@@ -182,6 +182,60 @@ void main(){
 
 )glsl";
 
+inline const char* meshVert = R"glsl(
+#version 330 core
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNormal;
+layout(location=2) in vec4 aColor;
+layout(location=3) in vec4 aMaterial;
+
+uniform mat4 vp;
+uniform vec3 uPos;
+uniform vec2 uRot;
+uniform float uScale;
+uniform vec3 uColor;
+
+out vec4 vColor;
+out vec4 vMaterial;
+out vec3 ourcolor;
+out vec3 fragNormal;
+out vec3 fragWorldPos;
+
+vec4 quatFromAxisAngle(vec3 axis, float angle) {
+    float h = angle * 0.5;
+    return vec4(axis * sin(h), cos(h));
+}
+vec4 quatMul(vec4 a, vec4 b) {
+    return vec4(
+        a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y,
+        a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x,
+        a.w*b.z + a.x*b.y - a.y*b.x + a.z*b.w,
+        a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z
+    );
+}
+vec3 quatRotate(vec4 q, vec3 v) {
+    vec3 u = q.xyz;
+    float s = q.w;
+    return 2.0*dot(u,v)*u + (s*s - dot(u,u))*v + 2.0*s*cross(u,v);
+}
+
+void main(){
+    vec4 qx = quatFromAxisAngle(vec3(1,0,0), uRot.x);
+    vec4 qy = quatFromAxisAngle(vec3(0,1,0), uRot.y);
+    vec4 rot = quatMul(qy, qx);
+
+    vec3 rotated = quatRotate(rot, aPos * uScale);
+    vec3 worldPos = rotated + uPos;
+
+    gl_Position = vp * vec4(worldPos, 1.0);
+
+    fragNormal = normalize(quatRotate(rot, aNormal));
+    fragWorldPos = worldPos;
+    ourcolor = uColor;
+    vColor = aColor;
+    vMaterial = aMaterial;
+}
+)glsl";
 
 inline const  char* tri3dinstvert = R"glsl(
 #version 330 core

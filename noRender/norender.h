@@ -17,9 +17,14 @@ struct quadvertex2d {
 struct linepoint2d { float ox, oy, dx, dy, r, g, b; };
 struct quadtexture2d { float r, g, b, opacity; };
 struct spriteData { std::vector<quadtexture2d> data; int width, height; };
+struct MeshData {
+	unsigned int vao = 0;
+	unsigned int vbo = 0;
+	unsigned int ebo = 0;
+	int indexCount = 0;
+	bool hasTransparency = false;
+};
 struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
-struct simpletriangle { float x, y, r, g, b; };
-struct Mesh2D { std::vector<simpletriangle> data; };
 	class norender {
 
 	private:
@@ -31,6 +36,7 @@ struct Mesh2D { std::vector<simpletriangle> data; };
 		float movementSpeed = 1.0f;
 		float deltaTime = 1 / 120.0f;
 		float fov = 60.0f;
+		int MeshCount = 100;
 
 		// Creates a GLFW window with the given pixel dimensions, title, and vsync toggle (1=on, 0=off)
 		int createWindow(int width, int height, const char* name,int vsync);
@@ -97,6 +103,9 @@ struct Mesh2D { std::vector<simpletriangle> data; };
 
 		// Loads an image file and returns it as sprite pixel data
 		 spriteData loadSprite(const char* address);
+
+		// Loads a .glb/.gltf mesh file, uploads to GPU, returns a MeshData handle
+		 MeshData loadMesh(const char* address);
 		
 	};
 	
@@ -172,6 +181,12 @@ struct Mesh2D { std::vector<simpletriangle> data; };
 
 		// Reserved for raw 3D triangle access (advanced)
 		void rawTriangles3D();
+
+		// Draws a loaded mesh at (x,y,z) with rotation (degrees) and RGB color
+		void drawMesh(MeshData& mesh, float x, float y, float z, float size,
+			float rotX, float rotY,
+			float r, float g, float b, 
+			bool useModelColor , bool showNormal );
 	};
 
 	

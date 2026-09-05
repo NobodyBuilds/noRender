@@ -52,3 +52,6 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline  GLuint quad3dVAO, quad3dVBO, quad3dProgram;
 
 	inline unsigned int triangle3dVAO[max_interop] = { 0 }, triangle3dbaseVBO[max_interop] = { 0 }, triangle3dProgram[max_interop] = { 0 }, triangle3dDataVBO[max_interop] = { 0 };
+
+	// mesh
+	inline unsigned int meshProgram = 0;

@@ -20,6 +20,9 @@
     <ClInclude Include="stb_image.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="cgltf.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="drawcalls">

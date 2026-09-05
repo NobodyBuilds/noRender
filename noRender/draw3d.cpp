@@ -99,3 +99,53 @@ void Render::quad3D(float x1, float y1, float z1,
 }
 
 void Render::rawTriangles3D() {}
+
+void Render::drawMesh(MeshData& mesh, float x, float y, float z, float size,
+	float rotX, float rotY,
+	float r, float g, float b,
+	bool useModelColor, bool showNormal)
+{
+	glm::mat4 vp = getProjMatrix() * getViewMatrix();
+
+	float rx = rotX * (3.14159265f / 180.0f);
+	float ry = rotY * (3.14159265f / 180.0f);
+
+	glUseProgram(meshProgram);
+	glUniformMatrix4fv(glGetUniformLocation(meshProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+	glUniform3f(glGetUniformLocation(meshProgram, "uPos"), x, y, z);
+	glUniform2f(glGetUniformLocation(meshProgram, "uRot"), rx, ry);
+	glUniform1f(glGetUniformLocation(meshProgram, "uScale"), size);
+	glUniform3f(glGetUniformLocation(meshProgram, "uColor"), r, g, b);
+	glUniform1i(glGetUniformLocation(meshProgram, "uUseModelColor"), useModelColor ? 1 : 0);
+	glUniform1i(glGetUniformLocation(meshProgram, "uShowNormal"), showNormal ? 1 : 0);
+	glUniform3f(glGetUniformLocation(meshProgram, "uCameraPos"), camera.position.x, camera.position.y, camera.position.z);
+
+	glBindVertexArray(mesh.vao);
+	if (mesh.hasTransparency && useModelColor) {
+		GLint passLocation = glGetUniformLocation(meshProgram, "uAlphaPass");
+
+		glUniform1i(passLocation, 0);
+		glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+
+		GLboolean wasBlendEnabled = glIsEnabled(GL_BLEND);
+		GLboolean previousDepthMask = GL_TRUE;
+		glGetBooleanv(GL_DEPTH_WRITEMASK, &previousDepthMask);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthMask(GL_FALSE);
+
+		glUniform1i(passLocation, 1);
+		glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+
+		glDepthMask(previousDepthMask);
+		if (!wasBlendEnabled) {
+			glDisable(GL_BLEND);
+		}
+	}
+	else {
+		glUniform1i(glGetUniformLocation(meshProgram, "uAlphaPass"), 2);
+		glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+	}
+	glBindVertexArray(0);
+}

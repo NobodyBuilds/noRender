@@ -25,6 +25,14 @@ struct MeshData {
 	bool hasTransparency = false;
 };
 struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
+struct vertex3d { float x, y, z; };
+struct rawTriangles3D {
+	vertex3d vertex1;
+	vertex3d vertex2;
+	vertex3d vertex3;
+	float r, g, b;
+};
+
 	class norender {
 
 	private:
@@ -179,8 +187,14 @@ struct triangle3d { float x, y, z, size, rotX, rotY, r, g, b; };
 		// Draws many 3D triangles in one instanced draw call
 		void triangleBatch3D(std::vector<triangle3d>& instances);
 
-		// Reserved for raw 3D triangle access (advanced)
-		void rawTriangles3D();
+		// Draws a single raw 3D triangle from world-space vertices with RGB color
+		void rawTriangle3D(rawTriangles3D& tri);
+
+		// Draws many raw 3D triangles in one batched draw call (uses indexed rendering with unique vertices)
+		void rawTriangleBatch3D(std::vector<rawTriangles3D>& tris);
+
+		// Draws raw 3D triangles from a pre-filled GPU buffer (interop, no CPU upload)
+		void rawTriangleBatchInterop3D(int count, int id);
 
 		// Draws a loaded mesh at (x,y,z) with rotation (degrees) and RGB color
 		void drawMesh(MeshData& mesh, float x, float y, float z, float size,

@@ -53,5 +53,13 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 
 	inline unsigned int triangle3dVAO[max_interop] = { 0 }, triangle3dbaseVBO[max_interop] = { 0 }, triangle3dProgram[max_interop] = { 0 }, triangle3dDataVBO[max_interop] = { 0 };
 
+	// raw triangle 3D (single)
+	inline GLuint rawTri3dVAO = 0, rawTri3dVBO = 0, rawTri3dProgram = 0;
+	// raw triangle 3D (batch/interop)
+	inline unsigned int rawTri3dBatchVAO[max_interop] = { 0 };
+	inline unsigned int rawTri3dBatchVBO[max_interop] = { 0 };
+	inline unsigned int rawTri3dBatchEBO[max_interop] = { 0 };
+	inline unsigned int rawTri3dBatchProgram = 0;
+
 	// mesh
 	inline unsigned int meshProgram = 0;

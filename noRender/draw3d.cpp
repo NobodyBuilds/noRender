@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <unordered_map>
 
 
 void Render::triangle3D(float x, float y, float z,
@@ -98,7 +99,117 @@ void Render::quad3D(float x1, float y1, float z1,
     glBindVertexArray(0);
 }
 
-void Render::rawTriangles3D() {}
+void Render::rawTriangle3D(rawTriangles3D& tri) {
+    static bool firstcall = true;
+    if (firstcall) {
+        initRawTriangleBuffer3d();
+        firstcall = false;
+    }
+    float verts[] = {
+        tri.vertex1.x, tri.vertex1.y, tri.vertex1.z, tri.r, tri.g, tri.b,
+        tri.vertex2.x, tri.vertex2.y, tri.vertex2.z, tri.r, tri.g, tri.b,
+        tri.vertex3.x, tri.vertex3.y, tri.vertex3.z, tri.r, tri.g, tri.b,
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, rawTri3dVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(rawTri3dProgram);
+    glUniformMatrix4fv(glGetUniformLocation(rawTri3dProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glBindVertexArray(rawTri3dVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
+}
+
+void Render::rawTriangleBatch3D(std::vector<rawTriangles3D>& tris) {
+    static bool firstcall = true;
+    if (firstcall) {
+        initRawTriangleBatchBuffer3d((int)tris.size(), 0);
+        firstcall = false;
+    }
+    int count = (int)tris.size();
+    if (count < 1)
+        return;
+
+    // Build unique vertex set and index buffer for indexed rendering
+    struct VertKey {
+        float x, y, z, r, g, b;
+        bool operator==(const VertKey& o) const {
+            return x == o.x && y == o.y && z == o.z && r == o.r && g == o.g && b == o.b;
+        }
+    };
+    struct VertHash {
+        size_t operator()(const VertKey& v) const {
+            size_t h = 0;
+            auto hf = std::hash<float>{};
+            h ^= hf(v.x) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            h ^= hf(v.y) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            h ^= hf(v.z) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            h ^= hf(v.r) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            h ^= hf(v.g) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            h ^= hf(v.b) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            return h;
+        }
+    };
+
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    std::unordered_map<VertKey, unsigned int, VertHash> vertMap;
+    vertices.reserve(count * 3 * 6);
+    indices.reserve(count * 3);
+
+    auto addVert = [&](float x, float y, float z, float r, float g, float b) {
+        VertKey key = { x, y, z, r, g, b };
+        auto it = vertMap.find(key);
+        if (it != vertMap.end()) {
+            indices.push_back(it->second);
+        } else {
+            unsigned int idx = (unsigned int)(vertices.size() / 6);
+            vertMap[key] = idx;
+            vertices.push_back(x); vertices.push_back(y); vertices.push_back(z);
+            vertices.push_back(r); vertices.push_back(g); vertices.push_back(b);
+            indices.push_back(idx);
+        }
+    };
+
+    for (int i = 0; i < count; i++) {
+        addVert(tris[i].vertex1.x, tris[i].vertex1.y, tris[i].vertex1.z, tris[i].r, tris[i].g, tris[i].b);
+        addVert(tris[i].vertex2.x, tris[i].vertex2.y, tris[i].vertex2.z, tris[i].r, tris[i].g, tris[i].b);
+        addVert(tris[i].vertex3.x, tris[i].vertex3.y, tris[i].vertex3.z, tris[i].r, tris[i].g, tris[i].b);
+    }
+
+    // Upload unique vertices
+    glBindBuffer(GL_ARRAY_BUFFER, rawTri3dBatchVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STREAM_DRAW);
+
+    // Bind VAO (restores EBO association) and upload indices
+    glBindVertexArray(rawTri3dBatchVAO[0]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STREAM_DRAW);
+
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(rawTri3dBatchProgram);
+    glUniformMatrix4fv(glGetUniformLocation(rawTri3dBatchProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Render::rawTriangleBatchInterop3D(int count, int id) {
+    static bool firstcall = true;
+    static int pc = 0;
+    if (firstcall || count > pc) {
+        initRawTriangleBatchBuffer3d(count, id);
+        firstcall = false;
+    }
+    if (count == 0)
+        return;
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(rawTri3dBatchProgram);
+    glUniformMatrix4fv(glGetUniformLocation(rawTri3dBatchProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glBindVertexArray(rawTri3dBatchVAO[id]);
+    glDrawArrays(GL_TRIANGLES, 0, count * 3);
+    glBindVertexArray(0);
+    pc = count;
+}
 
 void Render::drawMesh(MeshData& mesh, float x, float y, float z, float size,
 	float rotX, float rotY,

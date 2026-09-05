@@ -429,3 +429,60 @@ inline void initQuadBuffer3d()
 
 	quad3dProgram = createProgram(triangle3dvert, triangle3dfrag);
 }
+
+// raw triangle 3D (single)
+inline void initRawTriangleBuffer3d()
+{
+	if (rawTri3dVAO != 0)
+		return;
+	glGenVertexArrays(1, &rawTri3dVAO);
+	glGenBuffers(1, &rawTri3dVBO);
+	glBindVertexArray(rawTri3dVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, rawTri3dVBO);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), nullptr, GL_STREAM_DRAW); // 3 verts × (3 pos + 3 color)
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // color
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
+	rawTri3dProgram = createProgram(rawTri3dVert, triangle3dfrag);
+}
+
+// raw triangle 3D (batch/interop)
+inline void initRawTriangleBatchBuffer3d(int count, int id)
+{
+	static int prevcount[max_interop] = { 0 };
+	if (rawTri3dBatchVAO[id] != 0 && prevcount[id] >= count)
+		return;
+	if (rawTri3dBatchVAO[id] == 0) {
+		glGenVertexArrays(1, &rawTri3dBatchVAO[id]);
+		glGenBuffers(1, &rawTri3dBatchVBO[id]);
+		glGenBuffers(1, &rawTri3dBatchEBO[id]);
+	}
+
+	glBindVertexArray(rawTri3dBatchVAO[id]);
+
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, rawTri3dBatchVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, count * 3 * 6 * sizeof(float), nullptr, GL_STREAM_DRAW); // count tris × 3 verts × 6 floats
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rawTri3dBatchEBO[id]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * 3 * sizeof(unsigned int), nullptr, GL_STREAM_DRAW); // count tris × 3 indices
+		prevcount[id] = count;
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, rawTri3dBatchVBO[id]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // color
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rawTri3dBatchEBO[id]);
+
+	glBindVertexArray(0);
+	if (rawTri3dBatchProgram == 0) {
+		rawTri3dBatchProgram = createProgram(rawTri3dVert, triangle3dfrag);
+	}
+}

@@ -335,6 +335,7 @@ inline void initquadfsbuffer(int width,int height, int id) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	quadfsprogram = createProgram(quadfsVert, quadfsfrag);
+		quadfsprogram3D = createProgram(quadfs3DVert, quadfsfrag);
 }
 // 3d
 

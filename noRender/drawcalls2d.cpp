@@ -369,7 +369,6 @@ void Render::line(float x1, float y1, float x2, float y2, float r, float g, floa
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
 }
-
 void Render::lineBatch(std::vector<linepoint2d> &points)
 {
     if (noRender.getMode() == 3)
@@ -404,7 +403,6 @@ void Render::lineBatch(std::vector<linepoint2d> &points)
     glDrawArraysInstanced(GL_LINES, 0, 2, count);
     glBindVertexArray(0);
 }
-
 void Render::lineBatchInterop(int c,int id)
 {
     if (noRender.getMode() == 3)
@@ -443,8 +441,7 @@ void Render::lineBatchInterop(int c,int id)
     pc = c;
 }
 
-
-void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, float rotX, float rotY) {
+void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY) {
 
 
     if ((int)quadscreen.size() != pixelX * pixelY)
@@ -491,7 +488,6 @@ void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX,
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
-    glUniform2f(glGetUniformLocation(quadfsprogram, "uRot"), rotX * (3.14159265f / 180.0f), rotY * (3.14159265f / 180.0f));
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[0]);
@@ -500,7 +496,7 @@ void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX,
     
 }
 
-void Render::textureQuadInterop(float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, int id, float rotX, float rotY) {
+void Render::textureQuadInterop(float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY, int id) {
 
 
     
@@ -535,7 +531,6 @@ void Render::textureQuadInterop(float positonX, float positonY, float quadWidth,
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
-    glUniform2f(glGetUniformLocation(quadfsprogram, "uRot"), rotX * (3.14159265f / 180.0f), rotY * (3.14159265f / 180.0f));
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[id]);
@@ -544,8 +539,8 @@ void Render::textureQuadInterop(float positonX, float positonY, float quadWidth,
 
 }
 
-void Render::sprite(spriteData & sprite, float positonX, float positonY, float size, float rotX, float rotY) {
-    render.textureQuad(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height, rotX, rotY);
+void Render::sprite(spriteData & sprite, float positonX, float positonY, float size) {
+    render.textureQuad(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
 }
 
 void Render::Mesh2D() {

@@ -158,13 +158,13 @@ struct rawTriangles3D {
 		void circleBatchInterop(int count, int id);
 
 		// Renders a CPU pixel buffer as a textured quad on screen
-		void textureQuad(std::vector<quadtexture2d>& quadscreen,float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY,float rotX,float rotY);
+		void textureQuad(std::vector<quadtexture2d>& quadscreen,float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY);
 
 		// Renders a textured quad from a pre-filled GPU texture (interop, no CPU upload)
-		void textureQuadInterop(float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY,int id, float rotX, float rotY);
+		void textureQuadInterop(float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY,int id);
 
 		// Draws a loaded sprite at (posX,posY) scaled to the given size
-		void sprite(spriteData& sprite, float positonX, float positonY, float size,float rotX,float rotY);
+		void sprite(spriteData& sprite, float positonX, float positonY, float size);
 
 		// Reserved for raw 2D triangle access (advanced)
 		void Mesh2D();
@@ -201,12 +201,6 @@ struct rawTriangles3D {
 			float rotX, float rotY,
 			float r, float g, float b, 
 			bool useModelColor , bool showNormal );
-
-		// Renders a CPU pixel buffer as a textured quad in 3D space
-		void textureQuad3D(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, float rotX, float rotY);
-
-		// Renders a textured quad in 3D space from a pre-filled GPU texture (interop, no CPU upload)
-		void textureQuadInterop3D(float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, int id, float rotX, float rotY);
 	};
 
 	

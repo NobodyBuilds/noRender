@@ -44,7 +44,6 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline unsigned int quadfsVBO[max_interop] = { 0 };
 	inline unsigned int quadfsTEX[max_interop] = { 0 };
 	inline unsigned int quadfsprogram = 0;
-	inline unsigned int quadfsprogram3D = 0;
 
 
 	//3d

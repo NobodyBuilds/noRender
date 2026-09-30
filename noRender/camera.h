@@ -9,6 +9,9 @@ struct View {
 	float cx ;
 	
 	float cz ;
+	float cameraX = 0.0f;
+	float cameraY = 0.0f;
+	bool cameraPositionSet = false;
 	float height =1.0f;
 	float aspect =5.0f;
 	float zoom = 1.f;
@@ -71,6 +74,34 @@ inline void updateCameraVectors(Camera& cam)
 		camera.position -= camera.up * speed;
 
 	
+}
+
+inline void updateCameraMovement2D(GLFWwindow* window)
+{
+	if (!window || noRender.isInputBlocked())
+		return;
+
+	float speed = noRender.movementSpeed2D * noRender.deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		view.cameraY += speed;
+		view.cameraPositionSet = true;
+		camera.position.y = view.cameraY;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		view.cameraY -= speed;
+		view.cameraPositionSet = true;
+		camera.position.y = view.cameraY;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		view.cameraX -= speed;
+		view.cameraPositionSet = true;
+		camera.position.x = view.cameraX;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		view.cameraX += speed;
+		view.cameraPositionSet = true;
+		camera.position.x = view.cameraX;
+	}
 }
 
  inline glm::mat4 getViewMatrix() {
@@ -163,8 +194,11 @@ inline void updateCameraVectors(Camera& cam)
  }
  inline void updatefov(float fov) {
      camera.fov = fov;
+     
      if (camera.fov < 15.0f)
          camera.fov = 15.0f;
      if (camera.fov > 120.0f)
          camera.fov = 120.0f;
  }
+
+

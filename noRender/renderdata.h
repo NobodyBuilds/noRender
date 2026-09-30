@@ -44,7 +44,7 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline unsigned int quadfsVBO[max_interop] = { 0 };
 	inline unsigned int quadfsTEX[max_interop] = { 0 };
 	inline unsigned int quadfsprogram = 0;
-
+	inline unsigned int quadfsprogram3D = 0;
 
 	//3d
 	//triangle
@@ -52,6 +52,12 @@ inline constexpr int max_interop = 10;//tune this for more interops vbo ids
 	inline  GLuint quad3dVAO, quad3dVBO, quad3dProgram;
 
 	inline unsigned int triangle3dVAO[max_interop] = { 0 }, triangle3dbaseVBO[max_interop] = { 0 }, triangle3dProgram[max_interop] = { 0 }, triangle3dDataVBO[max_interop] = { 0 };
+
+	// instanced quad 3D
+	inline unsigned int quad3dInstVAO[max_interop] = { 0 };
+	inline unsigned int quad3dInstBaseVBO[max_interop] = { 0 };
+	inline unsigned int quad3dInstDataVBO[max_interop] = { 0 };
+	inline unsigned int quad3dInstProgram = 0;
 
 	// raw triangle 3D (single)
 	inline GLuint rawTri3dVAO = 0, rawTri3dVBO = 0, rawTri3dProgram = 0;

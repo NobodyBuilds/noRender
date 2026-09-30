@@ -49,6 +49,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		view.height = (float)height;
 		view.aspect = (float)width / (float)height;
 	};
+	if (!view.cameraPositionSet) {
+		view.cameraX = (float)width * 0.5f;
+		view.cameraY = (float)height * 0.5f;
+	}
 
 };
 
@@ -87,6 +91,10 @@ int norender::createWindow(int width, int height, const char* Windowname, int vs
 	view.cz = height * 0.5f;
 	view.height = (float)height;
 	view.aspect = (float)width / (float)height;
+	if (!view.cameraPositionSet) {
+		view.cameraX = (float)width * 0.5f;
+		view.cameraY = (float)height * 0.5f;
+	}
 	view.width();
 	return 0;
 };
@@ -137,11 +145,6 @@ void norender::setup3D() {
 }
 void norender::setupCamera() {
 	if (noRender.getMode() == 2) {
-		static bool firstcall = true;
-		if (firstcall) {
-			printf("ERROR: camera is not available for 2d scene\n");
-			firstcall = false;
-		}
 		return;
 	}
 	if (blockedInput) return;
@@ -155,14 +158,24 @@ void norender::setupCamera() {
 }
 
 
-void norender::updateCamera() {
+void norender::updateCamera(bool wasd) {
+	if (noRender.isInputBlocked())
+		return;
+	if (noRender.getMode() == 2) {
+		if(wasd)updateCameraMovement2D(window);
+		return;
+	}
 	updatefov(noRender.fov);
-	updateCameraMovement(window);
+	if(wasd)updateCameraMovement(window);
 }
 float norender::getCameraX() {
+	if (noRender.getMode() == 2)
+		return view.cameraX;
 	return camera.position.x;
 }
 float norender::getCameraY() {
+	if (noRender.getMode() == 2)
+		return view.cameraY;
 	return camera.position.y;
 }
 float norender::getCameraZ() {
@@ -180,7 +193,7 @@ void norender::setInputBlocked(bool blocked) {
 
 
 spriteData norender::loadSprite(const char* address) {
-	int w, h, channels;
+	int w = 0, h = 0, channels = 0;
 	stbi_set_flip_vertically_on_load(true);
 
 
@@ -190,20 +203,23 @@ spriteData norender::loadSprite(const char* address) {
 		printf("Failed to load %s: %s\n", address, stbi_failure_reason());
 		return {};
 	}
-	std::vector<quadtexture2d> container;
-	container.reserve(w * h);
-	for (int i = 0; i < w * h; i++) {
-		quadtexture2d t;
-		t.r = data[i * 4 + 0] / 255.0f;
-		t.g = data[i * 4 + 1] / 255.0f;
-		t.b = data[i * 4 + 2] / 255.0f;
-		t.opacity = data[i * 4 + 3] / 255.0f;
-
-		container.push_back(t);
+	GLuint textureId = 0;
+	glGenTextures(1, &textureId);
+	if (textureId == 0) {
+		printf("Failed to create GPU texture for %s\n", address);
+		stbi_image_free(data);
+		return {};
 	}
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(data);
 
-	return {container,w,h};
+	return { textureId, w, h };
 }
 //vboids
   
@@ -236,6 +252,19 @@ unsigned int vboids::quad_texture_tex(int pixelwidth,int pixelheight, int id)con
 	initquadfsbuffer(pixelwidth,pixelheight, id);
 	return quadfsTEX[id];
 }
+unsigned int vboids::quad3d_instanced_vbo(int count, int id) const {
+	initQuad3dInstBuffer(count, id);
+	return quad3dInstDataVBO[id];
+}
+
+
+void norender::setcamerapos(float x, float y, float z) {
+	camera.position = { x,y,z };
+	view.cameraX = x;
+	view.cameraY = y;
+	view.cameraPositionSet = true;
+}
+
 
 
 static constexpr int meshStrideFloats = 14;

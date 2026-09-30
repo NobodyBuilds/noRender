@@ -427,9 +427,62 @@ inline void initQuadBuffer3d()
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0);
 
-	quad3dProgram = createProgram(triangle3dvert, triangle3dfrag);
+	quad3dProgram = createProgram(rawTri3dVert, triangle3dfrag);
 }
 
+inline void initQuad3dInstBuffer(int count, int id)
+{
+	static int prevcount[max_interop] = { 0 };
+	if (quad3dInstVAO[id] != 0 && prevcount[id] >= count)
+		return;
+	if (quad3dInstVAO[id] == 0) {
+		glGenVertexArrays(1, &quad3dInstVAO[id]);
+		glGenBuffers(1, &quad3dInstBaseVBO[id]);
+		glGenBuffers(1, &quad3dInstDataVBO[id]);
+	}
+	// 6 corner indices forming 2 triangles: (v1,v3,v4) and (v1,v2,v4)
+	float cornerIDs[] = { 0, 1, 2, 0, 2, 3 };
+
+	glBindVertexArray(quad3dInstVAO[id]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, quad3dInstBaseVBO[id]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cornerIDs), cornerIDs, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribDivisor(0, 0);
+
+	if (prevcount[id] < count) {
+		glBindBuffer(GL_ARRAY_BUFFER, quad3dInstDataVBO[id]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertex3d) * count, nullptr, GL_STATIC_DRAW);
+		prevcount[id] = count;
+	}
+	// layout 1: iV1 (3 floats, offset 0)
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(quadVertex3d), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribDivisor(1, 1);
+	// layout 2: iV2 (3 floats, offset 12)
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(quadVertex3d), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribDivisor(2, 1);
+	// layout 3: iV3 (3 floats, offset 24)
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(quadVertex3d), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribDivisor(3, 1);
+	// layout 4: iV4 (3 floats, offset 36)
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(quadVertex3d), (void*)(9 * sizeof(float)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribDivisor(4, 1);
+	// layout 5: iColor (3 floats, offset 48)
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(quadVertex3d), (void*)(12 * sizeof(float)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribDivisor(5, 1);
+
+	glBindVertexArray(0);
+	if (quad3dInstProgram == 0) {
+		quad3dInstProgram = createProgram(quad3dInstVert, triangle3dfrag);
+	}
+	prevcount[id] = count;
+}
 // raw triangle 3D (single)
 inline void initRawTriangleBuffer3d()
 {

@@ -82,10 +82,10 @@ void Render::quad3D(float x1, float y1, float z1,
     }
     float verts[] = {
        x1,y1,z1, r,g,b,
-       x3,y3,z3, r,g,b,
-       x4,y4,z4, r,g,b,
-       x1,y1,z1, r,g,b,
        x2,y2,z2, r,g,b,
+       x3,y3,z4, r,g,b,
+       x1,y1,z1, r,g,b,
+       x3,y3,z3, r,g,b,
        x4,y4,z4, r,g,b,
     };
     glm::mat4 vp = getProjMatrix() * getViewMatrix();
@@ -97,6 +97,43 @@ void Render::quad3D(float x1, float y1, float z1,
     glBindVertexArray(quad3dVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+}
+
+void Render::quad3DBatch(std::vector<quadVertex3d>& instances) {
+    static bool firstcall = true;
+    if (firstcall) {
+        initQuad3dInstBuffer((int)instances.size(), 0);
+        firstcall = false;
+    }
+    int count = (int)instances.size();
+    if (count < 1)
+        return;
+    glBindBuffer(GL_ARRAY_BUFFER, quad3dInstDataVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertex3d) * count, instances.data(), GL_STREAM_DRAW);
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(quad3dInstProgram);
+    glUniformMatrix4fv(glGetUniformLocation(quad3dInstProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glBindVertexArray(quad3dInstVAO[0]);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
+    glBindVertexArray(0);
+}
+
+void Render::quad3DBatchInterop3D(int count, int id) {
+    static bool firstcall = true;
+    static int pc = 0;
+    if (firstcall || count > pc) {
+        initQuad3dInstBuffer(count, id);
+        firstcall = false;
+    }
+    if (count == 0)
+        return;
+    glm::mat4 vp = getProjMatrix() * getViewMatrix();
+    glUseProgram(quad3dInstProgram);
+    glUniformMatrix4fv(glGetUniformLocation(quad3dInstProgram, "vp"), 1, GL_FALSE, glm::value_ptr(vp));
+    glBindVertexArray(quad3dInstVAO[id]);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
+    glBindVertexArray(0);
+    pc = count;
 }
 
 void Render::rawTriangle3D(rawTriangles3D& tri) {
@@ -259,4 +296,145 @@ void Render::drawMesh(MeshData& mesh, float x, float y, float z, float size,
 		glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
+}
+
+void Render::textureQuad3D(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, float rotX, float rotY) {
+    glEnable(GL_BLEND);
+    if ((int)quadscreen.size() != pixelX * pixelY) {
+        printf("ERROR: quadscreen size (%zu) != pixelX*pixelY (%d)\n", quadscreen.size(), pixelX * pixelY);
+        return;
+    }
+
+    if (noRender.getMode() == 2) {
+        static bool error = true;
+        if (error) {
+            printf("ERROR: use render2D class instead of render3D for 2D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    static bool firstcall = true;
+    if (firstcall) {
+        initquadfsbuffer(pixelX,pixelY,0);
+        if (quadfsprogram3D == 0) {
+            quadfsprogram3D = createProgram(quadfs3DVert, quadfsfrag);
+        }
+        firstcall = false;
+    }
+
+    static int prevW = 0, prevH = 0;
+    bool resized = (pixelX != prevW || pixelY != prevH);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, quadfsTEX[0]);
+
+    if (resized) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixelX, pixelY, 0, GL_RGBA, GL_FLOAT, quadscreen.data());
+        prevW = pixelX; 
+        prevH = pixelY;
+    } else {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pixelX, pixelY, GL_RGBA, GL_FLOAT, quadscreen.data());
+    }
+
+    glUseProgram(quadfsprogram3D);
+    glUniform3f(glGetUniformLocation(quadfsprogram3D, "uPosition"), positonX, positonY, positonZ);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uSize"), quadWidth, quadHeight);
+    
+    float rX = rotX * (3.14159265f / 180.0f);
+    float rY = rotY * (3.14159265f / 180.0f);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uRot"), rX, rY);
+    
+    glUniformMatrix4fv(glGetUniformLocation(quadfsprogram3D, "vp"), 1, GL_FALSE, glm::value_ptr(getProjMatrix() * getViewMatrix()));
+    glUniform1i(glGetUniformLocation(quadfsprogram3D, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[0]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+    glDisable(GL_BLEND);
+}
+
+void Render::textureQuadInterop3D(float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, int id, float rotX, float rotY) {
+    if (noRender.getMode() == 2) {
+        static bool error = true;
+        if (error) {
+            printf("ERROR: use render2D class instead of render3D for 2D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    static bool firstcall = true;
+    if (firstcall) {
+        initquadfsbuffer(pixelX, pixelY, id);
+        if (quadfsprogram3D == 0) {
+            quadfsprogram3D = createProgram(quadfs3DVert, quadfsfrag);
+        }
+        firstcall = false;
+    }
+
+    static int prevW = 0, prevH = 0;
+    bool resized = (pixelX != prevW || pixelY != prevH);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, quadfsTEX[id]);
+
+    if (resized) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixelX, pixelY, 0, GL_RGBA, GL_FLOAT, nullptr);
+        prevW = pixelX;
+        prevH = pixelY;
+    }
+
+    glUseProgram(quadfsprogram3D);
+    glUniform3f(glGetUniformLocation(quadfsprogram3D, "uPosition"), positonX, positonY, positonZ);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uSize"), quadWidth, quadHeight);
+
+    float rX = rotX * (3.14159265f / 180.0f);
+    float rY = rotY * (3.14159265f / 180.0f);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uRot"), rX, rY);
+
+    glUniformMatrix4fv(glGetUniformLocation(quadfsprogram3D, "vp"), 1, GL_FALSE, glm::value_ptr(getProjMatrix() * getViewMatrix()));
+    glUniform1i(glGetUniformLocation(quadfsprogram3D, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[id]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+void Render::sprite3D(spriteData& sprite, float positonX, float positonY, float positonZ, float size, float rotX, float rotY) {
+    if (sprite.id == 0 || sprite.width <= 0 || sprite.height <= 0)
+        return;
+    if (noRender.getMode() == 2) {
+        static bool error = true;
+        if (error) {
+            printf("ERROR: use render2D class instead of render3D for 2D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (quadfsVAO[0] == 0)
+        initquadfsbuffer(1, 1, 0);
+    if (quadfsprogram3D == 0)
+        quadfsprogram3D = createProgram(quadfs3DVert, quadfsfrag);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, sprite.id);
+    glUseProgram(quadfsprogram3D);
+    glUniform3f(glGetUniformLocation(quadfsprogram3D, "uPosition"), positonX, positonY, positonZ);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uSize"), size, size);
+
+    float rX = rotX * (3.14159265f / 180.0f);
+    float rY = rotY * (3.14159265f / 180.0f);
+    glUniform2f(glGetUniformLocation(quadfsprogram3D, "uRot"), rX, rY);
+    glUniformMatrix4fv(glGetUniformLocation(quadfsprogram3D, "vp"), 1, GL_FALSE,
+        glm::value_ptr(getProjMatrix() * getViewMatrix()));
+    glUniform1i(glGetUniformLocation(quadfsprogram3D, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[0]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+    glDisable(GL_BLEND);
 }

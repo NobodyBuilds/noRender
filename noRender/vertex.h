@@ -37,6 +37,7 @@ layout(location=4) in float  rot;
 
 out vec3 ourcolor;
 uniform vec2 screenSize;
+uniform vec2 cameraPos2D;
 
 void main(){
         
@@ -49,7 +50,7 @@ void main(){
    vec2 local =vec2(aLocal.x *c - aLocal.y *S,aLocal.x *S + aLocal.y *c);
 
 
-    vec2 world = iPos + local * iSize;
+    vec2 world = iPos + local * iSize - cameraPos2D + screenSize * 0.5;
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,
@@ -67,6 +68,7 @@ layout(location=3) in vec3  iColor;
 layout(location=4) in float  rot;
 out vec3 ourcolor;
 uniform vec2 screenSize;
+uniform vec2 cameraPos2D;
 
 void main(){
    vec2 l =aLocal * (iSize*0.5f);
@@ -78,7 +80,7 @@ void main(){
    vec2 local =vec2(l.x *c - l.y *S,l.x *S + l.y *c);
 
 
-    vec2 world = iPos + local;
+    vec2 world = iPos + local - cameraPos2D + screenSize * 0.5;
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,
@@ -98,9 +100,10 @@ layout(location=3) in vec3  iColor;
 out vec3 ourcolor;
 out vec2 offset;
 uniform vec2 screenSize;
+uniform vec2 cameraPos2D;
 
 void main(){
-    vec2 world = iPos + aLocal * (iSize*0.5f);
+    vec2 world = iPos + aLocal * (iSize*0.5f) - cameraPos2D + screenSize * 0.5;
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,
@@ -120,9 +123,10 @@ layout(location=3) in vec3  iColor;
 out vec3 ourcolor;
 
 uniform vec2 screenSize;
+uniform vec2 cameraPos2D;
 
 void main(){
- vec2 world = mix(iStart, iEnd, aT);
+ vec2 world = mix(iStart, iEnd, aT) - cameraPos2D + screenSize * 0.5;
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,
@@ -166,11 +170,12 @@ layout(location=1) in vec2 aUV;
 uniform vec2 uPosition;
 uniform vec2 uSize;
 uniform vec2 screenSize;
+uniform vec2 cameraPos2D;
 
 out vec2 vUV;
 
 void main(){
-    vec2 world = uPosition + aPos * (uSize * 0.5);
+    vec2 world = uPosition + aPos * (uSize * 0.5) - cameraPos2D + screenSize * 0.5;
     gl_Position = vec4(
         world.x / (screenSize.x * 0.5) - 1.0,
         world.y / (screenSize.y * 0.5) - 1.0,
@@ -302,5 +307,70 @@ out vec3 ourcolor;
 void main() {
     gl_Position = vp * vec4(aPos, 1.0);
     ourcolor = aColor;
+}
+)glsl";
+
+inline const char* quad3dInstVert = R"glsl(
+#version 330 core
+layout(location=0) in float aCornerID;
+layout(location=1) in vec3 iV1;
+layout(location=2) in vec3 iV2;
+layout(location=3) in vec3 iV3;
+layout(location=4) in vec3 iV4;
+layout(location=5) in vec3 iColor;
+uniform mat4 vp;
+out vec3 ourcolor;
+
+void main(){
+    int id = int(aCornerID);
+    vec3 pos;
+    if      (id == 0) pos = iV1;
+    else if (id == 1) pos = iV2;
+    else if (id == 2) pos = iV3;
+    else              pos = iV4;
+    gl_Position = vp * vec4(pos, 1.0);
+    ourcolor = iColor;
+}
+)glsl";
+
+inline const char* quadfs3DVert= R"glsl(
+#version 330 core
+layout(location=0) in vec2 aPos;
+layout(location=1) in vec2 aUV;
+uniform vec3 uPosition;
+uniform vec2 uSize;
+uniform vec2 uRot;
+uniform mat4 vp;
+
+out vec2 vUV;
+
+vec4 quatFromAxisAngle(vec3 axis, float angle) {
+    float h = angle * 0.5;
+    return vec4(axis * sin(h), cos(h));
+}
+vec4 quatMul(vec4 a, vec4 b) {
+    return vec4(
+        a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y,
+        a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x,
+        a.w*b.z + a.x*b.y - a.y*b.x + a.z*b.w,
+        a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z
+    );
+}
+vec3 quatRotate(vec4 q, vec3 v) {
+    vec3 u = q.xyz;
+    float s = q.w;
+    return 2.0*dot(u,v)*u + (s*s - dot(u,u))*v + 2.0*s*cross(u,v);
+}
+
+void main(){
+    vec4 qx = quatFromAxisAngle(vec3(1,0,0), uRot.x);
+    vec4 qy = quatFromAxisAngle(vec3(0,1,0), uRot.y);
+    vec4 rot = quatMul(qy, qx);
+    
+    vec3 rotated = quatRotate(rot, vec3(aPos * (uSize * 0.5), 0.0));
+    vec3 world = uPosition + rotated;
+
+    gl_Position = vp * vec4(world, 1.0);
+    vUV = aUV;
 }
 )glsl";

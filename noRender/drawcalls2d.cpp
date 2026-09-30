@@ -5,6 +5,7 @@
 #include "helper.h"
 #include <vector>
 #include "buffers.h"
+#include "camera.h"
 
 
 
@@ -48,9 +49,9 @@ void Render::triangle(float x, float y, float r, float g, float b, float size,fl
     float n3x_local = half_width * c - (-height_down) * S;
     float n3y_local = half_width * S + (-height_down) * c;
 
-    vec2 n1 = PixelToNDC(x + n1x_local, y + n1y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n2 = PixelToNDC(x + n2x_local, y + n2y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n3 = PixelToNDC(x + n3x_local, y + n3y_local, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n1 = PixelToNDC(x + n1x_local - view.cameraX + noRender.getScreenWidth() * 0.5f, y + n1y_local - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + n2x_local - view.cameraX + noRender.getScreenWidth() * 0.5f, y + n2y_local - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x + n3x_local - view.cameraX + noRender.getScreenWidth() * 0.5f, y + n3y_local - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -85,9 +86,9 @@ void Render::circle(float x, float y, float r, float g, float b, float size)
         firstcall = false;
     }
     float s = size*0.5f;
-    vec2 n1 = PixelToNDC(x - s, y - s, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n2 = PixelToNDC(x + 3.0f * s, y - s, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n3 = PixelToNDC(x - s, y + 3.0f * s, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n1 = PixelToNDC(x - s - view.cameraX + noRender.getScreenWidth() * 0.5f, y - s - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + 3.0f * s - view.cameraX + noRender.getScreenWidth() * 0.5f, y - s - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x - s - view.cameraX + noRender.getScreenWidth() * 0.5f, y + 3.0f * s - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
     float ox[3] = {-1.0f, 3.0f, -1.0f};
     float oy[3] = {-1.0f, -1.0f, 3.0f};
 
@@ -149,12 +150,12 @@ void Render::quad(float x, float y, float r, float g, float b, float width, floa
 
    
 
-    vec2 n1 = PixelToNDC(x + lx1, y +ly1, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n2 = PixelToNDC(x + lx2, y +ly2, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n3 = PixelToNDC(x + lx3, y +ly3, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n4 = PixelToNDC(x + lx4, y +ly4,noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n5 = PixelToNDC(x + lx5, y +ly5,noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n6 = PixelToNDC(x + lx6, y +ly6,noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n1 = PixelToNDC(x + lx1 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly1 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x + lx2 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly2 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n3 = PixelToNDC(x + lx3 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly3 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n4 = PixelToNDC(x + lx4 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly4 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n5 = PixelToNDC(x + lx5 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly5 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n6 = PixelToNDC(x + lx6 - view.cameraX + noRender.getScreenWidth() * 0.5f, y + ly6 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y,
@@ -200,6 +201,7 @@ void Render::triangleBatch(std::vector<Trianglevertex2d> &instances)
     glUseProgram(triInstProgram);
     glUniform2f(glGetUniformLocation(triInstProgram, "screenSize"),
                 (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(triInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(triInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
@@ -233,6 +235,7 @@ void Render::quadBatch(std::vector<quadvertex2d> &instances)
     glUseProgram(quadInstProgram);
     glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
                 (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(quadInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(quadInstVAO[0]);
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, count);
@@ -264,6 +267,7 @@ void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading
     glUseProgram(quadInstProgram);
     glUniform2f(glGetUniformLocation(quadInstProgram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(quadInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(quadInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
@@ -299,6 +303,7 @@ void Render::circleBatch(std::vector<circlevertex2d> &instances)
     glUseProgram(circleInstProgram);
     glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
                 (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(circleInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(circleInstVAO[0]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
@@ -330,6 +335,7 @@ void Render::circleBatchInterop(int count, int id) {
     glUseProgram(circleInstProgram);
     glUniform2f(glGetUniformLocation(circleInstProgram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(circleInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(circleInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
@@ -354,8 +360,8 @@ void Render::line(float x1, float y1, float x2, float y2, float r, float g, floa
         initLineBuffer2d();
         firstcall = false;
     }
-    vec2 n1 = PixelToNDC(x1, y1, noRender.getScreenWidth(), noRender.getScreenHeight());
-    vec2 n2 = PixelToNDC(x2, y2, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n1 = PixelToNDC(x1 - view.cameraX + noRender.getScreenWidth() * 0.5f, y1 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
+    vec2 n2 = PixelToNDC(x2 - view.cameraX + noRender.getScreenWidth() * 0.5f, y2 - view.cameraY + noRender.getScreenHeight() * 0.5f, noRender.getScreenWidth(), noRender.getScreenHeight());
 
     float vertices[] = {
         n1.x, n1.y, r, g, b,
@@ -398,6 +404,7 @@ void Render::lineBatch(std::vector<linepoint2d> &points)
     glUseProgram(chainprogram);
     glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(chainprogram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(chainVAO[0]);
     glDrawArraysInstanced(GL_LINES, 0, 2, count);
@@ -434,6 +441,7 @@ void Render::lineBatchInterop(int c,int id)
     glUseProgram(chainprogram);
     glUniform2f(glGetUniformLocation(chainprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(chainprogram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(chainVAO[id]);
     glDrawArraysInstanced(GL_LINES, 0, 2, c);
@@ -488,6 +496,7 @@ void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX,
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(quadfsprogram, "cameraPos2D"), view.cameraX, view.cameraY);
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[0]);
@@ -531,6 +540,7 @@ void Render::textureQuadInterop(float positonX, float positonY, float quadWidth,
     glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), quadWidth, quadHeight);
     glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
         (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(quadfsprogram, "cameraPos2D"), view.cameraX, view.cameraY);
     glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
 
     glBindVertexArray(quadfsVAO[id]);
@@ -540,7 +550,33 @@ void Render::textureQuadInterop(float positonX, float positonY, float quadWidth,
 }
 
 void Render::sprite(spriteData & sprite, float positonX, float positonY, float size) {
-    render.textureQuad(sprite.data, positonX, positonY,size, size, sprite.width, sprite.height);
+    if (sprite.id == 0 || sprite.width <= 0 || sprite.height <= 0)
+        return;
+    if (noRender.getMode() == 3) {
+        static bool error = true;
+        if (error) {
+            printf("ERROR: use render3D class instead of render2D for 3D scene\n");
+            error = false;
+        }
+        return;
+    }
+
+    if (quadfsVAO[0] == 0)
+        initquadfsbuffer(1, 1, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, sprite.id);
+
+    glUseProgram(quadfsprogram);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uPosition"), positonX, positonY);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "uSize"), size, size);
+    glUniform2f(glGetUniformLocation(quadfsprogram, "screenSize"),
+        (float)noRender.getScreenWidth(), (float)noRender.getScreenHeight());
+    glUniform2f(glGetUniformLocation(quadfsprogram, "cameraPos2D"), view.cameraX, view.cameraY);
+    glUniform1i(glGetUniformLocation(quadfsprogram, "uTex"), 0);
+
+    glBindVertexArray(quadfsVAO[0]);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 }
 
 void Render::Mesh2D() {

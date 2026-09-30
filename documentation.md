@@ -167,6 +167,27 @@ int main()
 }
 ```
 
+### 2D Camera
+
+The 2D camera starts centered on the window. Call `updateCamera()` once per frame to move it with **W/A/S/D**. Camera positions use the same pixel coordinates as 2D shapes, and `setcamerapos(x, y, z)` selects the world point shown at the center of the window; `z` is unused in 2D.
+
+```cpp
+noRender.createWindow(1280, 720, "2D Camera", 1);
+noRender.setup2D();
+noRender.setcamerapos(640.0f, 360.0f, 0.0f); // start at the window center
+noRender.movementSpeed2D = 300.0f;            // pixels per second
+noRender.deltaTime = 1.0f / 60.0f;
+
+while (noRender.isWindowOpen())
+{
+    noRender.pollEvents();
+    noRender.updateCamera();
+    noRender.clearScreen(0.05f, 0.05f, 0.08f);
+    render.circle(640, 360, 1.0f, 0.2f, 0.2f, 80);
+    noRender.swapBuffers();
+}
+```
+
 ---
 
 ## 3. Drawing 3D Shapes
@@ -336,7 +357,7 @@ int main()
     noRender.createWindow(1280, 720, "Sprites", 1);
     noRender.setup2D();
 
-    // Load an image (PNG, JPG, BMP supported)
+    // Load and upload an image once (PNG, JPG, BMP supported)
     spriteData player = noRender.loadSprite("assets/player.png");
 
     while (noRender.isWindowOpen())
@@ -704,7 +725,8 @@ id = vbo_id.quad_texture_tex(pixelWidth, pixelHeight, slot);
 
 | Variable | Default | What it does |
 |---|---|---|
-| `noRender.movementSpeed` | `1.0` | Camera move speed (3D) |
+| `noRender.movementSpeed` | `1.0` | 3D camera speed in world units per second |
+| `noRender.movementSpeed2D` | `300.0` | 2D camera speed in pixels per second |
 | `noRender.deltaTime` | `1/120.0` | Frame timestep |
 | `noRender.fov` | `60.0` | Field of view degrees (clamped 15–120) |
 | `mouseSensitivity` | `0.15` | Mouse look sensitivity (global) |
@@ -727,8 +749,8 @@ void clearScreen(float r, float g, float b);                     // clear backgr
 void init();                                                     // init internals
 void setup2D();                                                  // 2D mode
 void setup3D();                                                  // 3D mode
-void setupCamera();                                              // init 3D camera
-void updateCamera();                                             // update camera per frame
+void setupCamera();                                              // init 3D camera controls
+void updateCamera();                                             // update camera per frame (WASD in 2D)
 float getCameraX();                                              // camera position
 float getCameraY();
 float getCameraZ();
@@ -736,10 +758,11 @@ int getMode();                                                   // 2=2D, 3=3D
 int getScreenWidth();
 int getScreenHeight();
 void setScreenSize(float w, float h);
+void setcamerapos(float x, float y, float z);                     // set camera position (2D uses x/y)
 GLFWwindow* getWindowHandle();                                   // raw GLFW pointer
 void setInputBlocked(bool blocked);                              // block camera input
 bool isInputBlocked();
-spriteData loadSprite(const char* path);                         // load image
+spriteData loadSprite(const char* path);                         // load image into GPU texture
 ```
 
 ### `render` (drawing)
@@ -784,4 +807,4 @@ void triangleBatch3D(vector<triangle3d>& data);
 | Colors look wrong | Colors are **0.0–1.0** floats, not 0–255 integers. |
 | Interop draws nothing | Make sure you use slot `id >= 1`. Slot 0 is reserved for CPU batches. |
 | Sprite loads but shows nothing | Check the file path. Use forward slashes or escaped backslashes in paths. |
-| Camera doesn't move | Make sure you call both `setupCamera()` **and** `updateCamera()` every frame. |
+| Camera doesn't move | Call `updateCamera()` every frame; in 3D, also call `setupCamera()` once after `setup3D()`. |

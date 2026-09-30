@@ -16,7 +16,7 @@ struct quadvertex2d {
 };
 struct linepoint2d { float ox, oy, dx, dy, r, g, b; };
 struct quadtexture2d { float r, g, b, opacity; };
-struct spriteData { std::vector<quadtexture2d> data; int width, height; };
+struct spriteData { unsigned int id = 0; int width = 0, height = 0; };
 struct MeshData {
 	unsigned int vao = 0;
 	unsigned int vbo = 0;
@@ -32,6 +32,13 @@ struct rawTriangles3D {
 	vertex3d vertex3;
 	float r, g, b;
 };
+struct quadVertex3d {
+	float x1, y1, z1;
+	float x2, y2, z2;
+	float x3, y3, z3;
+	float x4, y4, z4;
+	float r, g, b;
+};
 
 	class norender {
 
@@ -41,7 +48,8 @@ struct rawTriangles3D {
 		int screenheight = 0;
 		bool blockedInput = false;
 	public:
-		float movementSpeed = 1.0f;
+		float movementSpeed = 1.0f;       // 3D camera speed in world units per second
+		float movementSpeed2D = 300.0f;  // 2D camera speed in pixels per second
 		float deltaTime = 1 / 120.0f;
 		float fov = 60.0f;
 		int MeshCount = 100;
@@ -73,11 +81,11 @@ struct rawTriangles3D {
 		// Switches to 3D rendering mode (enables depth testing)
 		void setup3D();
 
-		// Initializes the 3D camera and registers mouse/scroll callbacks
+		// Initializes the 3D camera and registers mouse/scroll callbacks; 2D uses updateCamera directly
 		void setupCamera();
 
-		// Updates camera position from keyboard input each frame
-		void updateCamera();
+		// Updates camera position from keyboard input each frame (WASD in 2D and 3D)
+		void updateCamera(bool wasd);
 	
 		// Returns the camera X world-position
 		float getCameraX();
@@ -100,6 +108,9 @@ struct rawTriangles3D {
 		// Updates the stored screen dimensions (called on resize)
 		void setScreenSize(float w ,float h);
 
+		// Sets the camera position; 2D uses x/y as the pixel-space view target
+		void setcamerapos(float x, float y, float z);
+
 		// Returns the raw GLFW window pointer
 		GLFWwindow* getWindowHandle();
 
@@ -109,7 +120,7 @@ struct rawTriangles3D {
 		// Returns true if camera input is currently blocked
 		bool isInputBlocked() { return blockedInput; }
 
-		// Loads an image file and returns it as sprite pixel data
+		// Loads an image file into an OpenGL texture and returns its texture ID and dimensions
 		 spriteData loadSprite(const char* address);
 
 		// Loads a .glb/.gltf mesh file, uploads to GPU, returns a MeshData handle
@@ -155,7 +166,7 @@ struct rawTriangles3D {
 		void lineBatchInterop(int count,int id);
 
 		// Draws instanced circles using a pre-filled GPU buffer (interop, no CPU upload)
-		void circleBatchInterop(int count, int id);
+		void circleBatchInterop(int count, int id);  
 
 		// Renders a CPU pixel buffer as a textured quad on screen
 		void textureQuad(std::vector<quadtexture2d>& quadscreen,float positonX,float positonY,float quadWidth,float quadHeight, int pixelX, int pixelY);
@@ -196,11 +207,26 @@ struct rawTriangles3D {
 		// Draws raw 3D triangles from a pre-filled GPU buffer (interop, no CPU upload)
 		void rawTriangleBatchInterop3D(int count, int id);
 
+		// Draws many 3D quads in one instanced draw call
+		void quad3DBatch(std::vector<quadVertex3d>& instances);
+
+		// Draws instanced 3D quads from a pre-filled GPU buffer (interop, no CPU upload)
+		void quad3DBatchInterop3D(int count, int id);
+
 		// Draws a loaded mesh at (x,y,z) with rotation (degrees) and RGB color
 		void drawMesh(MeshData& mesh, float x, float y, float z, float size,
 			float rotX, float rotY,
 			float r, float g, float b, 
 			bool useModelColor , bool showNormal );
+
+		// Renders a CPU pixel buffer as a textured quad in 3D space
+		void textureQuad3D(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, float rotX, float rotY);
+
+		// Renders a textured quad in 3D space from a pre-filled GPU texture (interop, no CPU upload)
+		void textureQuadInterop3D(float positonX, float positonY, float positonZ, float quadWidth, float quadHeight, int pixelX, int pixelY, int id, float rotX, float rotY);
+
+		// Draws a 3D sprite at (posX,posY,posZ) scaled to the given size
+		void sprite3D(spriteData& sprite, float positonX, float positonY, float positonZ, float size, float rotX, float rotY);
 	};
 
 	
@@ -227,6 +253,7 @@ struct rawTriangles3D {
 		unsigned int line_vbo() const;
 		unsigned int line_instanced_vbo(int count,int id) const;
 		unsigned int quad_texture_tex(int pixelwidth,int pixelheight, int id) const;
+		unsigned int quad3d_instanced_vbo(int count, int id) const;
 
 	};
 	inline vboids vbo_id;

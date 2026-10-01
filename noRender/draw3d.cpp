@@ -51,12 +51,14 @@ void Render::triangle3D(float x, float y, float z,
 }
 
 void Render::triangleBatch3D(std::vector<triangle3d> &instances) {
-    static bool firstcall = true;
-    if (firstcall) {
-        inittriangle3dinstbuffer((int)instances.size(), 0);
-        firstcall = false;
-    }
     int count = (int)instances.size();
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount) {
+        inittriangle3dinstbuffer(count, 0);
+        firstcall = false;
+        oldcount = count;
+    }
     if (count < 1)
         return;
     glBindBuffer(GL_ARRAY_BUFFER, triangle3dDataVBO[0]);
@@ -100,12 +102,14 @@ void Render::quad3D(float x1, float y1, float z1,
 }
 
 void Render::quad3DBatch(std::vector<quadVertex3d>& instances) {
-    static bool firstcall = true;
-    if (firstcall) {
-        initQuad3dInstBuffer((int)instances.size(), 0);
-        firstcall = false;
-    }
     int count = (int)instances.size();
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount) {
+        initQuad3dInstBuffer(count, 0);
+        firstcall = false;
+        oldcount = count;
+    }
     if (count < 1)
         return;
     glBindBuffer(GL_ARRAY_BUFFER, quad3dInstDataVBO[0]);
@@ -119,11 +123,12 @@ void Render::quad3DBatch(std::vector<quadVertex3d>& instances) {
 }
 
 void Render::quad3DBatchInterop3D(int count, int id) {
-    static bool firstcall = true;
-    static int pc = 0;
-    if (firstcall || count > pc) {
+    static int oldcount[max_interop] = {};
+    static bool initialized[max_interop] = {};
+    if (!initialized[id] || count != oldcount[id]) {
         initQuad3dInstBuffer(count, id);
-        firstcall = false;
+        initialized[id] = true;
+        oldcount[id] = count;
     }
     if (count == 0)
         return;
@@ -133,7 +138,6 @@ void Render::quad3DBatchInterop3D(int count, int id) {
     glBindVertexArray(quad3dInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
-    pc = count;
 }
 
 void Render::rawTriangle3D(rawTriangles3D& tri) {
@@ -159,12 +163,14 @@ void Render::rawTriangle3D(rawTriangles3D& tri) {
 }
 
 void Render::rawTriangleBatch3D(std::vector<rawTriangles3D>& tris) {
-    static bool firstcall = true;
-    if (firstcall) {
-        initRawTriangleBatchBuffer3d((int)tris.size(), 0);
-        firstcall = false;
-    }
     int count = (int)tris.size();
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount) {
+        initRawTriangleBatchBuffer3d(count, 0);
+        firstcall = false;
+        oldcount = count;
+    }
     if (count < 1)
         return;
 
@@ -231,11 +237,12 @@ void Render::rawTriangleBatch3D(std::vector<rawTriangles3D>& tris) {
 }
 
 void Render::rawTriangleBatchInterop3D(int count, int id) {
-    static bool firstcall = true;
-    static int pc = 0;
-    if (firstcall || count > pc) {
+    static int oldcount[max_interop] = {};
+    static bool initialized[max_interop] = {};
+    if (!initialized[id] || count != oldcount[id]) {
         initRawTriangleBatchBuffer3d(count, id);
-        firstcall = false;
+        initialized[id] = true;
+        oldcount[id] = count;
     }
     if (count == 0)
         return;
@@ -245,7 +252,6 @@ void Render::rawTriangleBatchInterop3D(int count, int id) {
     glBindVertexArray(rawTri3dBatchVAO[id]);
     glDrawArrays(GL_TRIANGLES, 0, count * 3);
     glBindVertexArray(0);
-    pc = count;
 }
 
 void Render::drawMesh(MeshData& mesh, float x, float y, float z, float size,

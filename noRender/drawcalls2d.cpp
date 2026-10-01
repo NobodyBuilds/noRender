@@ -185,15 +185,17 @@ void Render::triangleBatch(std::vector<Trianglevertex2d> &instances)
         }
         return;
     }
-    static bool firstcall = true;
-    if (firstcall)
-    {
-        initInstancedTriangleBuffer2d((int)instances.size(),0);
-        firstcall = false;
-    }
     int count = (int)instances.size();
     if (count == 0)
         return;
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount)
+    {
+        initInstancedTriangleBuffer2d(count,0);
+        firstcall = false;
+        oldcount = count;
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, triInstDataVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, count * 7 * sizeof(float), instances.data(), GL_STREAM_DRAW);
@@ -219,15 +221,17 @@ void Render::quadBatch(std::vector<quadvertex2d> &instances)
         }
         return;
     }
-    static bool firstcall = true;
-    if (firstcall)
-    {
-        initInstancedQuadBuffer2d((int)instances.size(),0);
-        firstcall = false;
-    }
     int count = (int)instances.size();
     if (count == 0)
         return;
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount)
+    {
+        initInstancedQuadBuffer2d(count,0);
+        firstcall = false;
+        oldcount = count;
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[0]);
     glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), instances.data(), GL_STREAM_DRAW);
@@ -253,12 +257,13 @@ void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading
         }
         return;
     }
-    static bool firstcall = true;
-    static int pc = 0;
-    if (firstcall|| count>pc)
+    static int oldcount[max_interop] = {};
+    static bool initialized[max_interop] = {};
+    if (!initialized[id] || count != oldcount[id])
     {
         initInstancedQuadBuffer2d(count,id);
-        firstcall = false;
+        initialized[id] = true;
+        oldcount[id] = count;
     }
    
     if (count == 0)
@@ -272,7 +277,6 @@ void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading
     glBindVertexArray(quadInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
     glBindVertexArray(0);
-    pc = count;
 }
 void Render::circleBatch(std::vector<circlevertex2d> &instances)
 {
@@ -286,14 +290,16 @@ void Render::circleBatch(std::vector<circlevertex2d> &instances)
         }
         return;
     }
+    int count = (int)instances.size();
+    static int oldcount = 0;
     static bool firstcall = true;
 
-    if (firstcall)
+    if (firstcall || count != oldcount)
     {
-        initInstancedCircleBuffer2d((int)instances.size(),0);
+        initInstancedCircleBuffer2d(count,0);
         firstcall = false;
+        oldcount = count;
     }
-    int count = (int)instances.size();
     if (count == 0)
         return;
 
@@ -321,12 +327,13 @@ void Render::circleBatchInterop(int count, int id) {
         }
         return;
     }
-    static int pc = 0;
-    static bool firstcall = true;
-    if (firstcall||count>pc)
+    static int oldcount[max_interop] = {};
+    static bool initialized[max_interop] = {};
+    if (!initialized[id] || count != oldcount[id])
     {
         initInstancedCircleBuffer2d(count, id);
-        firstcall = false;
+        initialized[id] = true;
+        oldcount[id] = count;
     }
    
     if (count == 0)
@@ -340,7 +347,6 @@ void Render::circleBatchInterop(int count, int id) {
     glBindVertexArray(circleInstVAO[id]);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 3, count);
     glBindVertexArray(0);
-    pc = count;
 }
 void Render::line(float x1, float y1, float x2, float y2, float r, float g, float b)
 {
@@ -388,13 +394,15 @@ void Render::lineBatch(std::vector<linepoint2d> &points)
         return;
     }
 
-    static bool firstcall = true;
-    if (firstcall)
-    {
-        initlineinstancedBuffer2d((int)points.size(),0);
-        firstcall = false;
-    }
     int count = (int)points.size();
+    static int oldcount = 0;
+    static bool firstcall = true;
+    if (firstcall || count != oldcount)
+    {
+        initlineinstancedBuffer2d(count,0);
+        firstcall = false;
+        oldcount = count;
+    }
     if (count < 2)
         return;
 
@@ -426,12 +434,13 @@ void Render::lineBatchInterop(int c,int id)
         printf(" id 0 is already assigned use 1 ");
         return;
     }
-    static int pc = 0;
-    static bool firstcall = true;
-    if (firstcall||c>pc)
+    static int oldcount[max_interop] = {};
+    static bool initialized[max_interop] = {};
+    if (!initialized[id] || c != oldcount[id])
     {
         initlineinstancedBuffer2d(c,id);
-        firstcall = false;
+        initialized[id] = true;
+        oldcount[id] = c;
     }
    
 
@@ -446,7 +455,6 @@ void Render::lineBatchInterop(int c,int id)
     glBindVertexArray(chainVAO[id]);
     glDrawArraysInstanced(GL_LINES, 0, 2, c);
     glBindVertexArray(0);
-    pc = c;
 }
 
 void Render::textureQuad(std::vector<quadtexture2d>& quadscreen, float positonX, float positonY, float quadWidth, float quadHeight, int pixelX, int pixelY) {

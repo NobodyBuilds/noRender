@@ -186,15 +186,13 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		glGenBuffers(1, &quadInstEbo[id]);
 	}
 	float quadbaseVerts[] = {
-		-1.0f, 1.0f,
-		-1.0f, -1.0f,
-		1.0f, -1.0f,
-		-1.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, -1.0f
+		 -1.0f,  1.0f,  // 0: top-left
+	-1.0f, -1.0f,  // 1: bottom-left
+	 1.0f, -1.0f,  // 2: bottom-right
+	 1.0f,  1.0f   // 3: top-right
 
 	};
-	float indices[] = {
+	unsigned int indices[] = {
 		0, 1, 2,
 		0, 2, 3
 	};

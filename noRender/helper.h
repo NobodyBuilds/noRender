@@ -5,7 +5,6 @@
 #include <cstdint>
 #include<vector>
 #include <cmath>
-#include <vector_types.h>
 
 struct vec2 {
     float x;

@@ -148,7 +148,7 @@ inline void initInstancedCircleBuffer2d(int count,int id)
 	glVertexAttribDivisor(0, 0);
 	if (prevcount[id] < count) {
 		glBindBuffer(GL_ARRAY_BUFFER, circleInstDataVBO[id]);
-		glBufferData(GL_ARRAY_BUFFER, count * 6 * sizeof(float), circlebaseVerts, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, count * 6 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 		prevcount[id] = count;
 	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0); // pos
@@ -186,7 +186,7 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 		glGenBuffers(1, &quadInstEbo[id]);
 	}
 	float quadbaseVerts[] = {
-		 -1.0f,  1.0f,  // 0: top-left
+    -1.0f,  1.0f,  // 0: top-left
 	-1.0f, -1.0f,  // 1: bottom-left
 	 1.0f, -1.0f,  // 2: bottom-right
 	 1.0f,  1.0f   // 3: top-right
@@ -206,7 +206,7 @@ inline void initInstancedQuadBuffer2d(int count,int id)
 	glVertexAttribDivisor(0, 0);
 	if (prevcount[id]<count) {
 		glBindBuffer(GL_ARRAY_BUFFER, quadInstDataVBO[id]);
-		glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), nullptr, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, count * 8 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 		prevcount[id] = count;
 	}
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);

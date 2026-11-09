@@ -275,7 +275,7 @@ void Render::quadBatchInterop(int count,int id) {//for interops ,no data loading
     glUniform2f(glGetUniformLocation(quadInstProgram, "cameraPos2D"), view.cameraX, view.cameraY);
 
     glBindVertexArray(quadInstVAO[id]);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, count);
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, count);
     glBindVertexArray(0);
 }
 void Render::circleBatch(std::vector<circlevertex2d> &instances)

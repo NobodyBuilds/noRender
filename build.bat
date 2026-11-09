@@ -4,18 +4,7 @@ setlocal EnableExtensions
 set "ROOT=%~dp0"
 set "OUT=%ROOT%build"
 set "DEPS=%OUT%\_deps"
-set "GLFW_INCLUDE=%ROOT%glfw-3.4.bin.WIN64\include"
-set "GLAD_INCLUDE=%ROOT%glad\include"
 set "COMPILER="
-
-if not exist "%ROOT%glad\src\glad.c" (
-    echo ERROR: glad source is missing. Make sure the repository was cloned completely.
-    exit /b 1
-)
-if not exist "%GLFW_INCLUDE%\GLFW\glfw3.h" (
-    echo ERROR: GLFW headers are missing. Make sure the repository was cloned completely.
-    exit /b 1
-)
 
 rem Prefer the Visual Studio compiler, including when launched outside its Developer Prompt.
 where cl.exe >nul 2>&1
@@ -60,19 +49,30 @@ if not defined COMPILER (
     exit /b 1
 )
 
-if exist "%ROOT%glm-1.0.2\glm\glm.hpp" set "GLM_INCLUDE=%ROOT%glm-1.0.2"
-if not defined GLM_INCLUDE if exist "%ROOT%glm\glm.hpp" set "GLM_INCLUDE=%ROOT%"
-if not defined GLM_INCLUDE if exist "%DEPS%\glm-1.0.2\glm\glm.hpp" set "GLM_INCLUDE=%DEPS%\glm-1.0.2"
+echo Checking and downloading GLM, GLFW, and GLAD dependencies...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%ROOT%build-deps.ps1"
+if errorlevel 1 exit /b 1
 
-if not defined GLM_INCLUDE (
-    echo GLM 1.0.2 is not present. Downloading it into build\_deps...
-    if not exist "%DEPS%" mkdir "%DEPS%"
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $archive = Join-Path '%DEPS%' 'glm-1.0.2.zip'; Invoke-WebRequest -Uri 'https://github.com/g-truc/glm/archive/refs/tags/1.0.2.zip' -OutFile $archive; Expand-Archive -LiteralPath $archive -DestinationPath '%DEPS%' -Force; Remove-Item -LiteralPath $archive"
-    if errorlevel 1 (
-        echo ERROR: Could not download GLM. Check your network connection and run build.bat again.
-        exit /b 1
-    )
-    set "GLM_INCLUDE=%DEPS%\glm-1.0.2"
+set "GLM_INCLUDE=%DEPS%\glm-1.0.2"
+set "GLFW_INCLUDE=%DEPS%\glfw-3.4.bin.WIN64\include"
+set "GLAD_INCLUDE=%DEPS%\glad\include"
+set "GLAD_SOURCE=%DEPS%\glad\src\glad.c"
+
+if not exist "%GLM_INCLUDE%\glm\glm.hpp" (
+    echo ERROR: GLM headers were not found after dependency setup.
+    exit /b 1
+)
+if not exist "%GLFW_INCLUDE%\GLFW\glfw3.h" (
+    echo ERROR: GLFW headers were not found after dependency setup.
+    exit /b 1
+)
+if not exist "%GLAD_INCLUDE%\glad\glad.h" (
+    echo ERROR: GLAD headers were not found after dependency setup.
+    exit /b 1
+)
+if not exist "%GLAD_SOURCE%" (
+    echo ERROR: GLAD source was not generated.
+    exit /b 1
 )
 
 if not exist "%OUT%" mkdir "%OUT%"
@@ -90,7 +90,7 @@ exit /b 1
 call :compile_msvc_cpp "%ROOT%noRender\draw3d.cpp" "%OUT%\draw3d.obj" || goto build_failed
 call :compile_msvc_cpp "%ROOT%noRender\drawcalls2d.cpp" "%OUT%\drawcalls2d.obj" || goto build_failed
 call :compile_msvc_cpp "%ROOT%noRender\main.cpp" "%OUT%\main.obj" || goto build_failed
-cl.exe /nologo /MD /c "%ROOT%glad\src\glad.c" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
+cl.exe /nologo /MD /c "%GLAD_SOURCE%" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
 lib.exe /nologo /OUT:"%OUT%\noRender.lib" "%OUT%\draw3d.obj" "%OUT%\drawcalls2d.obj" "%OUT%\main.obj" "%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
@@ -101,7 +101,7 @@ exit /b 0
 call :compile_clang_cl_cpp "%ROOT%noRender\draw3d.cpp" "%OUT%\draw3d.obj" || goto build_failed
 call :compile_clang_cl_cpp "%ROOT%noRender\drawcalls2d.cpp" "%OUT%\drawcalls2d.obj" || goto build_failed
 call :compile_clang_cl_cpp "%ROOT%noRender\main.cpp" "%OUT%\main.obj" || goto build_failed
-clang-cl.exe /nologo /MD /c "%ROOT%glad\src\glad.c" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
+clang-cl.exe /nologo /MD /c "%GLAD_SOURCE%" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
 llvm-lib.exe /nologo /OUT:"%OUT%\noRender.lib" "%OUT%\draw3d.obj" "%OUT%\drawcalls2d.obj" "%OUT%\main.obj" "%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
@@ -112,7 +112,7 @@ exit /b 0
 call :compile_clang_cl_cpp "%ROOT%noRender\draw3d.cpp" "%OUT%\draw3d.obj" || goto build_failed
 call :compile_clang_cl_cpp "%ROOT%noRender\drawcalls2d.cpp" "%OUT%\drawcalls2d.obj" || goto build_failed
 call :compile_clang_cl_cpp "%ROOT%noRender\main.cpp" "%OUT%\main.obj" || goto build_failed
-clang-cl.exe /nologo /MD /c "%ROOT%glad\src\glad.c" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
+clang-cl.exe /nologo /MD /c "%GLAD_SOURCE%" /I"%GLAD_INCLUDE%" /Fo"%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
 lib.exe /nologo /OUT:"%OUT%\noRender.lib" "%OUT%\draw3d.obj" "%OUT%\drawcalls2d.obj" "%OUT%\main.obj" "%OUT%\glad.obj"
 if errorlevel 1 goto build_failed
@@ -128,7 +128,7 @@ if errorlevel 1 (
 call :compile_gnu_cpp g++ "%ROOT%noRender\draw3d.cpp" "%OUT%\draw3d.o" || goto build_failed
 call :compile_gnu_cpp g++ "%ROOT%noRender\drawcalls2d.cpp" "%OUT%\drawcalls2d.o" || goto build_failed
 call :compile_gnu_cpp g++ "%ROOT%noRender\main.cpp" "%OUT%\main.o" || goto build_failed
-gcc.exe -c "%ROOT%glad\src\glad.c" -I"%GLAD_INCLUDE%" -o "%OUT%\glad.o"
+gcc.exe -c "%GLAD_SOURCE%" -I"%GLAD_INCLUDE%" -o "%OUT%\glad.o"
 if errorlevel 1 goto build_failed
 ar.exe rcs "%OUT%\libnoRender.a" "%OUT%\draw3d.o" "%OUT%\drawcalls2d.o" "%OUT%\main.o" "%OUT%\glad.o"
 if errorlevel 1 goto build_failed
@@ -144,7 +144,7 @@ if errorlevel 1 (
 call :compile_gnu_cpp clang++ "%ROOT%noRender\draw3d.cpp" "%OUT%\draw3d.o" || goto build_failed
 call :compile_gnu_cpp clang++ "%ROOT%noRender\drawcalls2d.cpp" "%OUT%\drawcalls2d.o" || goto build_failed
 call :compile_gnu_cpp clang++ "%ROOT%noRender\main.cpp" "%OUT%\main.o" || goto build_failed
-clang.exe -c "%ROOT%glad\src\glad.c" -I"%GLAD_INCLUDE%" -o "%OUT%\glad.o"
+clang.exe -c "%GLAD_SOURCE%" -I"%GLAD_INCLUDE%" -o "%OUT%\glad.o"
 if errorlevel 1 goto build_failed
 llvm-ar.exe rcs "%OUT%\libnoRender.a" "%OUT%\draw3d.o" "%OUT%\drawcalls2d.o" "%OUT%\main.o" "%OUT%\glad.o"
 if errorlevel 1 goto build_failed
